@@ -1,0 +1,17 @@
+server:
+  env: "development"
+  port: 8080
+  prefix: "/api/v1"
+  debug: true
+
+database:
+  host: sd-db
+  name: sd-db
+  user: postgres
+  password: postgres
+  port: 5432
+  sslmode: disable
+  timezone: Asia/Bangkok
+
+jwt:
+  access_secret: secret

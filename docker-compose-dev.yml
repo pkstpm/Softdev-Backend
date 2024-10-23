@@ -1,0 +1,46 @@
+services:
+  backend:
+    container_name: sd-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    init: true
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - sd-db
+      - sd-pgadmin
+    volumes:
+      - .:/app/
+    restart: unless-stopped
+
+  sd-db:
+    image: postgres:13
+    container_name: sd-db
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  sd-pgadmin:
+    image: dpage/pgadmin4
+    container_name: sd-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - sd-db
+    restart: always
+
+volumes:
+  postgres_data:
