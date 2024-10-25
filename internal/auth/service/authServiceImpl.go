@@ -22,6 +22,17 @@ func NewAuthService(userRepository userRepository.UserRepository, restaurantRepo
 }
 
 func (s *authServiceImpl) Register(dto *dto.RegisterDTO) error {
+
+	check, err := s.userRepository.FindMatchUsernameOrEmail(dto.Username, dto.Email)
+
+	if check {
+		return errors.New("username or email already exists")
+	}
+
+	if err != nil {
+		return err
+	}
+
 	user := &userModel.User{
 		Username:    dto.Username,
 		Email:       dto.Email,
@@ -31,7 +42,7 @@ func (s *authServiceImpl) Register(dto *dto.RegisterDTO) error {
 		UserType:    userModel.Customer,
 	}
 
-	err := s.userRepository.CreateUser(user)
+	err = s.userRepository.CreateUser(user)
 	if err != nil {
 		return err
 	}
@@ -77,15 +88,15 @@ func (s *authServiceImpl) RegisterRestaurant(userId uuid.UUID, dto *dto.Register
 	return nil
 }
 
-func (s *authServiceImpl) Me(userId string) (string, error) {
+func (s *authServiceImpl) Me(userId string) (*userModel.User, string, error) {
 	user, err := s.userRepository.FindUserByID(userId)
 	if err != nil {
-		return "", errors.New("user not found")
+		return nil, "", errors.New("user not found")
 	}
 	accessToken, err := utils.GenerateAccessToken(user)
 	if err != nil {
-		return "", errors.New("could not generate access token")
+		return nil, "", errors.New("could not generate access token")
 	}
 
-	return accessToken, nil
+	return user, accessToken, nil
 }

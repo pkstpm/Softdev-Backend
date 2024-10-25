@@ -40,7 +40,7 @@ func (h *authController) Register(c echo.Context) error {
 
 	err := h.authService.Register(&registerDTO)
 	if err != nil {
-		return utils.SendError(c, http.StatusInternalServerError, "Registration failed", nil)
+		return utils.SendError(c, http.StatusInternalServerError, "Registration failed", err.Error())
 	}
 
 	return utils.SendSuccess(c, "User registered successfully", nil)
@@ -61,11 +61,7 @@ func (h *authController) Login(c echo.Context) error {
 		return utils.SendError(c, http.StatusInternalServerError, "Login failed", nil)
 	}
 
-	userResponse := dto.UserResponseDto{
-		AccessToken: accessToken,
-	}
-
-	return utils.SendSuccess(c, "User login successfully", userResponse)
+	return utils.SendSuccess(c, "User login successfully", accessToken)
 }
 
 func (h *authController) RegisterRestaurant(c echo.Context) error {
@@ -103,12 +99,18 @@ func (h *authController) RegisterRestaurant(c echo.Context) error {
 func (h *authController) Me(c echo.Context) error {
 	userIdStr := c.Get("user_id").(string)
 
-	accessToken, err := h.authService.Me(userIdStr)
+	user, accessToken, err := h.authService.Me(userIdStr)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Login failed", nil)
 	}
 
-	userResponse := dto.UserResponseDto{
+	userResponse := dto.UserResponse{
+		ID:          user.ID.String(),
+		DisplayName: user.DisplayName,
+		Username:    user.Username,
+		Email:       user.Email,
+		Role:        string(user.UserType),
+		PhoneNumebr: user.PhoneNumber,
 		AccessToken: accessToken,
 	}
 

@@ -18,6 +18,16 @@ type ChangePasswordDTO struct {
 	NewPassword string `json:"newPassword" validate:"required,password"`
 }
 
+type UserResponse struct {
+	ID          string `json:"id"`
+	DisplayName string `json:"display_name"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Role        string `json:"role"`
+	PhoneNumber string `json:"phone_number"`
+	ImgPath     string `json:"img_path"`
+}
+
 func CustomPhoneNumberValidator(fl validator.FieldLevel) bool {
 	phoneNumber := fl.Field().String()
 

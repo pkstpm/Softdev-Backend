@@ -8,6 +8,7 @@ type RestaurantController interface {
 	CreateDish(c echo.Context) error
 	UpdateDish(c echo.Context) error
 	GetTimeSlot(c echo.Context) error
+	GetTimeSlotById(c echo.Context) error
 	UpdateTimeSlot(c echo.Context) error
 	GetTable(c echo.Context) error
 	CreateTable(c echo.Context) error

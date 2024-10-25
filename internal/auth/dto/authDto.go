@@ -28,7 +28,13 @@ type RegisterRestaurantDTO struct {
 	Description    string `json:"description" validate:"required,min=3,max=30"`
 }
 
-type UserResponseDto struct {
+type UserResponse struct {
+	ID          string `json:"id"`
+	DisplayName string `json:"display_name"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Role        string `json:"role"`
+	PhoneNumebr string `json:"phone_number"`
 	AccessToken string `json:"access_token"`
 }
 

@@ -111,10 +111,11 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters := s.app.Group("/restaurant")
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
 	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
+	restaurantRouters.GET("/get-time-slot/:restaurant_id", restaurantController.GetTimeSlotById)
 
 	restaurantRouters.Use(middlewares.JWTMiddleware())
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
-	restaurantRouters.POST("/create-time-slot", restaurantController.UpdateTimeSlot)
+	restaurantRouters.POST("/update-time-slot", restaurantController.UpdateTimeSlot)
 	restaurantRouters.POST("/create-dish", restaurantController.CreateDish)
 	restaurantRouters.POST("/create-table", restaurantController.CreateTable)
 	restaurantRouters.PUT("/update-dish", restaurantController.UpdateDish)

@@ -6,6 +6,7 @@ import (
 )
 
 type UserService interface {
+	GetProfile(userId string) (*dto.UserResponse, error)
 	EditProfile(userId string, dto dto.EditProfileDTO) (*model.User, error)
 	ChangePassword(userId string, dto dto.ChangePasswordDTO) error
 	GetUser(userId string) (*model.User, error)

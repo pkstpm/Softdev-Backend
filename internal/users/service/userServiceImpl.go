@@ -16,6 +16,23 @@ func NewUserService(userRepository repository.UserRepository) UserService {
 	return &userServiceImpl{userRepository: userRepository}
 }
 
+func (s *userServiceImpl) GetProfile(userId string) (*dto.UserResponse, error) {
+	user, err := s.userRepository.FindUserByID(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserResponse{
+		ID:          user.ID.String(),
+		Username:    user.Username,
+		DisplayName: user.DisplayName,
+		Email:       user.Email,
+		Role:        string(user.UserType),
+		PhoneNumber: user.PhoneNumber,
+		ImgPath:     user.ImgPath,
+	}, nil
+}
+
 func (s *userServiceImpl) EditProfile(userId string, editDTO dto.EditProfileDTO) (*model.User, error) {
 	user, err := s.userRepository.FindUserByID(userId)
 	if err != nil {

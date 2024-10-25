@@ -40,6 +40,15 @@ func (r *userRepository) FindUserByEmailOrUsername(identifier string) (*model.Us
 	return &user, nil
 }
 
+func (r *userRepository) FindMatchUsernameOrEmail(username string, email string) (bool, error) {
+	var user model.User
+	err := r.db.Where("email = ? OR username = ?", email, username).First(&user).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (r *userRepository) EditProfileUser(user *model.User) error {
 	return r.db.Save(user).Error
 }

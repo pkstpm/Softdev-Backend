@@ -101,21 +101,21 @@ func (h *restaurantController) GetTimeSlot(c echo.Context) error {
 
 func (h *restaurantController) UpdateTimeSlot(c echo.Context) error {
 	userId := c.Get("user_id").(string)
-	var createTimeSlotDTO dto.UpdateTimeSlotDTO
-	if err := c.Bind(&createTimeSlotDTO); err != nil {
+	var updateTimeDTO dto.UpdateTimeDTO
+	if err := c.Bind(&updateTimeDTO); err != nil {
 		return utils.SendError(c, http.StatusBadRequest, "Invalid input", nil)
 	}
 
-	if err := validate.Struct(&createTimeSlotDTO); err != nil {
+	if err := validate.Struct(&updateTimeDTO); err != nil {
 		return utils.SendError(c, http.StatusBadRequest, "Validation failed", err.Error())
 	}
 
-	err := h.restaurantService.UpdateTimeSlot(userId, &createTimeSlotDTO)
+	err := h.restaurantService.UpdateTimeSlot(userId, &updateTimeDTO)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Create TimeSlot failed", err.Error())
 	}
 
-	return utils.SendSuccess(c, "TimeSlot create successfully", nil)
+	return utils.SendSuccess(c, "TimeSlot update successfully", nil)
 }
 
 func (h *restaurantController) GetTable(c echo.Context) error {
@@ -219,7 +219,7 @@ func (h *restaurantController) UploadRestaurantPictures(c echo.Context) error {
 }
 
 func (h *restaurantController) GetRestaurantByID(c echo.Context) error {
-	id := c.Param("user_id")
+	id := c.Param("restaurant_id")
 	restaurant, err := h.restaurantService.GetRestaurantByID(id)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Find restaurant by id failed", err.Error())
@@ -237,4 +237,14 @@ func (h *restaurantController) DeleteRestauranPictures(c echo.Context) error {
 	}
 
 	return utils.SendSuccess(c, "Restaurant retrieved successfully", nil)
+}
+
+func (h *restaurantController) GetTimeSlotById(c echo.Context) error {
+	restaurantid := c.Param("restaurant_id")
+	timeSlots, err := h.restaurantService.GetTimeSlotByRestaurantId(restaurantid)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Get TimeSlot failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "TimeSlot retrieved successfully", timeSlots)
 }

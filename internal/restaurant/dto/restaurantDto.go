@@ -1,9 +1,13 @@
 package dto
 
 type UpdateTimeSlotDTO struct {
-	Weekday   int `json:"weekday" validate:"required"`
-	HourStart int `json:"hour_start" validate:"required"`
-	HourEnd   int `json:"hour_end" validate:"required"`
+	Weekday   int `json:"weekday" validate:"required,gte=0,lte=6"`
+	HourStart int `json:"hour_start" validate:"required,gte=0,lte=23"`
+	HourEnd   int `json:"hour_end" validate:"required,gte=0,lte=23,gtfield=HourStart"`
+}
+
+type UpdateTimeDTO struct {
+	TimeSlots []UpdateTimeSlotDTO `json:"time_slot" validate:"required,dive"`
 }
 
 type CreateDishDTO struct {

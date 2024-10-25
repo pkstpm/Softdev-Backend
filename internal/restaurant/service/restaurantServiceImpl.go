@@ -115,22 +115,37 @@ func (r *restaurantServiceImpl) GetTimeSlot(userId string) ([]model.TimeSlot, er
 	return timeSlots, err
 }
 
-func (r *restaurantServiceImpl) UpdateTimeSlot(userId string, dto *dto.UpdateTimeSlotDTO) error {
+func (r *restaurantServiceImpl) GetTimeSlotByRestaurantId(restaurantId string) ([]model.TimeSlot, error) {
+	timeSlots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurantId)
+	if err != nil {
+		return nil, err
+	}
+	return timeSlots, nil
+}
+
+func (r *restaurantServiceImpl) UpdateTimeSlot(userId string, dto *dto.UpdateTimeDTO) error {
 	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
 		return err
 	}
 
-	timeslot := &model.TimeSlot{
-		RestaurantID: restaurant.ID,
-		Weekday:      dto.Weekday,
-		HourStart:    dto.HourStart,
-		HourEnd:      dto.HourEnd,
-	}
+	timeslots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurant.ID.String())
 
-	err = r.restaurantRepository.CreateTimeSlot(timeslot)
 	if err != nil {
 		return err
+	}
+
+	for _, timeslot := range timeslots {
+		for _, dto := range dto.TimeSlots {
+			if timeslot.Weekday == dto.Weekday {
+				timeslot.HourStart = dto.HourStart
+				timeslot.HourEnd = dto.HourEnd
+				err = r.restaurantRepository.UpdateTimeSlot(&timeslot)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 
 	return nil
