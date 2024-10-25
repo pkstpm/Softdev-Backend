@@ -47,6 +47,13 @@ func (s *echoServer) Start() {
 	s.app.Use(middleware.Recover())
 	s.app.Use(middleware.Logger())
 
+	s.app.Use(middleware.CORS())
+	s.app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"}, // Allow all origins, or specify your origins here
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+	}))
+
 	s.app.GET("/", func(c echo.Context) error {
 		return c.String(200, "OK")
 	})

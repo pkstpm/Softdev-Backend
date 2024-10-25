@@ -159,7 +159,7 @@ func (h *restaurantController) UploadRestaurantPictures(c echo.Context) error {
 
 	// Retrieve multiple files from the form
 	files := form.File["images"]
-	if files == nil || len(files) == 0 {
+	if len(files) == 0 {
 		return utils.SendError(c, http.StatusBadRequest, "No files uploaded", nil)
 	}
 
