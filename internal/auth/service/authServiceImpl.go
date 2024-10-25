@@ -23,14 +23,10 @@ func NewAuthService(userRepository userRepository.UserRepository, restaurantRepo
 
 func (s *authServiceImpl) Register(dto *dto.RegisterDTO) error {
 
-	check, err := s.userRepository.FindMatchUsernameOrEmail(dto.Username, dto.Email)
+	check := s.userRepository.FindMatchUsernameOrEmail(dto.Username, dto.Email)
 
 	if check {
 		return errors.New("username or email already exists")
-	}
-
-	if err != nil {
-		return err
 	}
 
 	user := &userModel.User{
@@ -42,7 +38,7 @@ func (s *authServiceImpl) Register(dto *dto.RegisterDTO) error {
 		UserType:    userModel.Customer,
 	}
 
-	err = s.userRepository.CreateUser(user)
+	err := s.userRepository.CreateUser(user)
 	if err != nil {
 		return err
 	}
