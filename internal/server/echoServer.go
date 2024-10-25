@@ -2,6 +2,9 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -53,6 +56,7 @@ func (s *echoServer) Start() {
 	s.initUserRoute()
 	s.initRestaurantRoute()
 	s.initReservationRoute()
+	s.initImageRoute()
 
 	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
 	s.app.Logger.Fatal(s.app.Start(serverUrl))
@@ -83,7 +87,9 @@ func (s *echoServer) initUserRoute() {
 	userRouters := s.app.Group("/users")
 	userRouters.Use(middlewares.JWTMiddleware())
 	userRouters.GET("/profile", userController.ViewProfile)
+	userRouters.POST("/upload-profile-picture", userController.UploadUserProfilePicture)
 	userRouters.PUT("/edit-profile", userController.UpdateProfile)
+	userRouters.PUT("/change-password", userController.ChangePassword)
 }
 
 func (s *echoServer) initRestaurantRoute() {
@@ -97,12 +103,16 @@ func (s *echoServer) initRestaurantRoute() {
 
 	restaurantRouters := s.app.Group("/restaurant")
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
+	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
+
 	restaurantRouters.Use(middlewares.JWTMiddleware())
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
 	restaurantRouters.POST("/create-time-slot", restaurantController.UpdateTimeSlot)
 	restaurantRouters.POST("/create-dish", restaurantController.CreateDish)
 	restaurantRouters.POST("/create-table", restaurantController.CreateTable)
 	restaurantRouters.PUT("/update-dish", restaurantController.UpdateDish)
+	restaurantRouters.POST("/upload-restaurant-picture", restaurantController.UploadRestaurantPictures)
+	restaurantRouters.DELETE("/delete-restaurant-picture:image_id", restaurantController.DeleteRestauranPictures)
 }
 
 func (s *echoServer) initReservationRoute() {
@@ -114,4 +124,21 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters := s.app.Group("/reservation")
 	reservationRouters.Use(middlewares.JWTMiddleware())
 	reservationRouters.POST("/create-reservation", reservationController.CreateReservation)
+}
+
+func (s *echoServer) initImageRoute() {
+	s.app.GET("/images/:filename", func(c echo.Context) error {
+		filename := c.Param("filename")
+		filePath := filepath.Join("uploads", filename)
+
+		// Check if the file exists
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			return c.JSON(http.StatusNotFound, echo.Map{
+				"message": "File not found",
+			})
+		}
+
+		// Serve the file for download
+		return c.File(filePath)
+	})
 }

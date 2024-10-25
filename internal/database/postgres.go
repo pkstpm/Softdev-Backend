@@ -73,31 +73,9 @@ func (p *postgresDatabase) Migrate() {
 	// p.GetDb().Exec("CREATE TYPE user_type AS ENUM ('Customer', 'Restaurant');")
 	// p.GetDb().Exec("CREATE TYPE status_type AS ENUM ('Accepted', 'Denied', 'Completed', 'Cancelled', 'Pending);")
 	// Migrate the schema
-	// p.GetDb().Migrator().DropTable(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{})
-	err = p.GetDb().AutoMigrate(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{})
+	// p.GetDb().Migrator().DropTable(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{})
+	err = p.GetDb().AutoMigrate(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
-
-	// var exists bool
-	// err = p.GetDb().Raw(`SELECT EXISTS (
-	// 	SELECT 1
-	// 	FROM pg_type
-	// 	WHERE typname = 'registration_type'
-	// )`).Scan(&exists).Error
-	// if err != nil {
-	// 	log.Fatalf("Error checking if enum type exists: %v", err)
-	// }
-
-	// if !exists {
-	// 	err = p.GetDb().Exec(`CREATE TYPE registration_type AS ENUM ('phone_otp', 'oauth')`).Error
-	// 	if err != nil {
-	// 		log.Fatalf("Error creating enum type: %v", err)
-	// 	}
-	// }
-	// // Migrate the schema
-	// err = p.GetDb().AutoMigrate(&authModels.User{}, &authModels.PhoneAuthentication{}, &authModels.OauthAutentication{})
-	// if err != nil {
-	// 	panic("failed to migrate database")
-	// }
 }

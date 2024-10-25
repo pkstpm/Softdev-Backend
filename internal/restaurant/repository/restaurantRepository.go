@@ -7,6 +7,7 @@ import (
 
 type RestaurantRepository interface {
 	FindRestaurantByUserID(userId string) (*model.Restaurant, error)
+	FindRestaurantByID(restaurantId string) (*model.Restaurant, error)
 	FindRestaurantByName(name string) ([]model.Restaurant, error)
 	FindRestaurantByCategory(category string) ([]model.Restaurant, error)
 	CreateRestaurant(restaurant *model.Restaurant) error
@@ -17,6 +18,7 @@ type RestaurantRepository interface {
 	GetDishPrice(dishId uuid.UUID) (int, error)
 
 	GetTablesByRestaurantId(restaurantId string) ([]model.Table, error)
+	GetTableById(tableId string) (*model.Table, error)
 	CreateTable(table *model.Table) error
 	UpdateTable(table *model.Table) error
 	DeleteTable(tableId string) error
@@ -24,4 +26,7 @@ type RestaurantRepository interface {
 	GetTimeSlotsByRestaurantId(restaurantId string) ([]model.TimeSlot, error)
 	CreateTimeSlot(timeSlot *model.TimeSlot) error
 	UpdateTimeSlot(timeSlot *model.TimeSlot) error
+
+	CreateImages(images *model.Image) error
+	DeleteImage(imageId string) error
 }

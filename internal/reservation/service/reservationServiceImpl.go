@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
@@ -18,6 +20,31 @@ func NewReservationService(reservationRepository repository.ReservationRepositor
 }
 
 func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.CreateReservationDTO) error {
+
+	timeSlots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(dto.RestaurantID.String())
+
+	if err != nil {
+		return err
+	}
+
+	timeSlot := timeSlots[(int(dto.StartTime.Weekday()))]
+
+	if timeSlot.HourStart > dto.StartTime.Hour() || timeSlot.HourEnd < dto.EndTime.Hour() {
+		return errors.New("reservation time is not within restaurant working hours")
+	}
+
+	table, err := r.restaurantRepository.GetTableById(dto.TableID.String())
+	if err != nil {
+		return err
+	}
+
+	reservations := table.Reservations
+	for _, reservation := range reservations {
+		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) {
+			return errors.New("table is already reserved")
+		}
+	}
+
 	reservation := &model.Reservation{
 		UserID:       userId,
 		TableID:      dto.TableID,

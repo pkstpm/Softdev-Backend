@@ -14,12 +14,19 @@ type Restaurant struct {
 	RestaurantLoca string    `gorm:"not null"`
 	Category       string    `gorm:"not null"`
 	Description    string
-	ImagePath      string
+	ImgPath        string
+	Images         []Image                        `gorm:"foreignKey:RestaurantID"`
 	Tables         []Table                        `gorm:"foreignKey:RestaurantID"`
 	Reservations   []reservationModel.Reservation `gorm:"foreignKey:RestaurantID"`
 	Dishes         []Dish                         `gorm:"foreignKey:RestaurantID"`
 	TimeSlots      []TimeSlot                     `gorm:"foreignKey:RestaurantID"`
 	// Reviews        []Review      `gorm:"foreignKey:RestaurantID"`
+}
+
+type Image struct {
+	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	RestaurantID uuid.UUID `gorm:"type:uuid;not null;foreignkey:Restaurant"`
+	ImgPath      string    `gorm:"not null"`
 }
 
 type Table struct {
@@ -43,7 +50,8 @@ type Dish struct {
 	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	RestaurantID uuid.UUID `gorm:"type:uuid;not null;foreignkey:Restaurant;"` // Foreign key for Restaurant
 	Name         string    `gorm:"not null"`                                  // Name of the dish
-	Price        int       `gorm:"not null"`                                  // Price of the dish
-	Description  string    `gorm:"not null"`                                  // Description of the dish
-	OptionList   string    `gorm:"not null"`                                  // Options for the dish, stored as a string
+	ImgPath      string
+	Price        int    `gorm:"not null"` // Price of the dish
+	Description  string `gorm:"not null"` // Description of the dish
+	OptionList   string `gorm:"not null"` // Options for the dish, stored as a string
 }

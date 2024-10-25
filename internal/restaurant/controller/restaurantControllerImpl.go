@@ -1,10 +1,15 @@
 package controller
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/service"
@@ -141,4 +146,95 @@ func (h *restaurantController) CreateTable(c echo.Context) error {
 	}
 
 	return utils.SendSuccess(c, "Table created successfully", nil)
+}
+
+func (h *restaurantController) UploadRestaurantPictures(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+
+	// Retrieve the multipart form
+	form, err := c.MultipartForm()
+	if err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Failed to retrieve files", err)
+	}
+
+	// Retrieve multiple files from the form
+	files := form.File["images"]
+	if files == nil || len(files) == 0 {
+		return utils.SendError(c, http.StatusBadRequest, "No files uploaded", nil)
+	}
+
+	var uploadedFiles []string // Store paths of successfully uploaded files
+
+	for _, file := range files {
+		// Open the file
+		src, err := file.Open()
+		if err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to open file", err)
+		}
+		defer src.Close()
+
+		// Check the MIME type of the file
+		mimeType := file.Header.Get("Content-Type")
+		if !utils.IsAllowedMimeType(mimeType) {
+			return utils.SendError(c, http.StatusBadRequest, "Invalid file type. Only PNG, JPEG, or JPG are allowed.", nil)
+		}
+
+		// Create a unique file name using UUID
+		uniqueID := uuid.New().String()
+		fileExtension := filepath.Ext(file.Filename)
+		newFileName := fmt.Sprintf("%s%s", uniqueID, fileExtension)
+
+		// Define the destination path
+		dstPath := filepath.Join("uploads", newFileName)
+
+		// Create destination directory if it doesn't exist
+		if err := os.MkdirAll("uploads", os.ModePerm); err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to create upload directory", err)
+		}
+
+		// Create the destination file
+		dst, err := os.Create(dstPath)
+		if err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to create destination file", err)
+		}
+		defer dst.Close()
+
+		// Copy the file content to the destination
+		if _, err = io.Copy(dst, src); err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to upload file", err)
+		}
+
+		// Optionally, you can store the uploaded file path in a slice or database
+		uploadedFiles = append(uploadedFiles, newFileName)
+	}
+
+	// Call your service to handle the uploaded files if needed
+	err = h.restaurantService.UploadRestaurantPictures(userId, uploadedFiles)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to upload profile pictures", err)
+	}
+
+	// Return success response with all uploaded file paths
+	return utils.SendSuccess(c, "Profile pictures uploaded successfully", uploadedFiles)
+}
+
+func (h *restaurantController) GetRestaurantByID(c echo.Context) error {
+	id := c.Param("user_id")
+	restaurant, err := h.restaurantService.GetRestaurantByID(id)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Find restaurant by id failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Restaurant retrieved successfully", restaurant)
+}
+
+func (h *restaurantController) DeleteRestauranPictures(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	imageId := c.Param("image_id")
+	err := h.restaurantService.DeletetRestaurantPicture(userId, imageId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Find restaurant by id failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Restaurant retrieved successfully", nil)
 }

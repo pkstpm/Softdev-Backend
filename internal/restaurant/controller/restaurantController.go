@@ -11,4 +11,7 @@ type RestaurantController interface {
 	UpdateTimeSlot(c echo.Context) error
 	GetTable(c echo.Context) error
 	CreateTable(c echo.Context) error
+	UploadRestaurantPictures(c echo.Context) error
+	DeleteRestauranPictures(c echo.Context) error
+	GetRestaurantByID(c echo.Context) error
 }

@@ -15,4 +15,7 @@ type RestaurantService interface {
 	UpdateTimeSlot(userId string, timeSlot *dto.UpdateTimeSlotDTO) error
 	GetTablesByRestaurantId(restaurantId string) ([]model.Table, error)
 	CreateTable(userId string, dto *dto.CreateTableDTO) error
+	UploadRestaurantPictures(userId string, uploadedFiles []string) error
+	DeletetRestaurantPicture(userId string, pictureId string) error
+	GetRestaurantByID(restaurantId string) (*model.Restaurant, error)
 }

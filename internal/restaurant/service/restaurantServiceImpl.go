@@ -163,3 +163,44 @@ func (r *restaurantServiceImpl) CreateTable(userId string, dto *dto.CreateTableD
 
 	return nil
 }
+
+func (r *restaurantServiceImpl) UploadRestaurantPictures(userId string, uploadedFiles []string) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range uploadedFiles {
+		err = r.restaurantRepository.CreateImages(&model.Image{
+			RestaurantID: restaurant.ID,
+			ImgPath:      file,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *restaurantServiceImpl) GetRestaurantByID(restaurantId string) (*model.Restaurant, error) {
+	restaurant, err := r.restaurantRepository.FindRestaurantByID(restaurantId)
+	if err != nil {
+		return nil, err
+	}
+	return restaurant, nil
+}
+
+func (r *restaurantServiceImpl) DeletetRestaurantPicture(userId string, pictureId string) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	err = r.restaurantRepository.DeleteImage(restaurant.ID.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

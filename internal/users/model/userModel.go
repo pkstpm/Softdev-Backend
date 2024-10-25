@@ -22,12 +22,13 @@ type User struct {
 	PhoneNumber string    `gorm:"not null"`
 	DisplayName string    `gorm:"not null"`
 	UserType    UserType  `gorm:"not null"`
+	ImgPath     string
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New()
 	if len(u.Password) > 0 {
-		u.Password, err = hashPassword(u.Password)
+		u.Password, err = HashPassword(u.Password)
 		if err != nil {
 			return err
 		}
@@ -36,7 +37,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func hashPassword(password string) (string, error) {
+func HashPassword(password string) (string, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err

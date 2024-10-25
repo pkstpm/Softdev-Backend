@@ -24,6 +24,15 @@ func (r *restaurantRepository) FindRestaurantByUserID(userId string) (*model.Res
 	return &restaurant, nil
 }
 
+func (r *restaurantRepository) FindRestaurantByID(restaurantId string) (*model.Restaurant, error) {
+	var restaurant model.Restaurant
+	err := r.db.Preload("Images").Where("id = ?", restaurantId).First(&restaurant).Error
+	if err != nil {
+		return nil, err
+	}
+	return &restaurant, nil
+}
+
 // FindRestaurantByName performs a case-insensitive partial match search for a restaurant by name
 func (r *restaurantRepository) FindRestaurantByName(name string) ([]model.Restaurant, error) {
 	var restaurants []model.Restaurant
@@ -108,6 +117,15 @@ func (r *restaurantRepository) GetTablesByRestaurantId(restaurantId string) ([]m
 	return tables, nil
 }
 
+func (r *restaurantRepository) GetTableById(tableId string) (*model.Table, error) {
+	var table model.Table
+	err := r.db.Preload("Reservations").Where("id = ?", tableId).First(&table).Error
+	if err != nil {
+		return nil, err
+	}
+	return &table, nil
+}
+
 func (r *restaurantRepository) CreateTable(table *model.Table) error {
 	err := r.db.Create(table).Error
 	if err != nil {
@@ -142,6 +160,22 @@ func (r *restaurantRepository) CreateTimeSlot(timeSlot *model.TimeSlot) error {
 
 func (r *restaurantRepository) UpdateTimeSlot(timeSlot *model.TimeSlot) error {
 	err := r.db.Save(timeSlot).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *restaurantRepository) CreateImages(images *model.Image) error {
+	err := r.db.Create(images).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *restaurantRepository) DeleteImage(imageId string) error {
+	err := r.db.Delete(&model.Image{}, imageId).Error
 	if err != nil {
 		return err
 	}
