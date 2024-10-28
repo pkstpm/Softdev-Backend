@@ -20,6 +20,9 @@ import (
 	restaurantController "github.com/pkstpm/Softdev-Backend/internal/restaurant/controller"
 	restaurantRepository "github.com/pkstpm/Softdev-Backend/internal/restaurant/repository"
 	restaurantService "github.com/pkstpm/Softdev-Backend/internal/restaurant/service"
+	reviewController "github.com/pkstpm/Softdev-Backend/internal/review/controller"
+	reviewRepository "github.com/pkstpm/Softdev-Backend/internal/review/repository"
+	reviewService "github.com/pkstpm/Softdev-Backend/internal/review/service"
 
 	userController "github.com/pkstpm/Softdev-Backend/internal/users/controller"
 	userRepository "github.com/pkstpm/Softdev-Backend/internal/users/repository"
@@ -115,8 +118,10 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
 	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
 	restaurantRouters.GET("/get-time-slot/:restaurant_id", restaurantController.GetTimeSlotById)
+	restaurantRouters.GET("/get-dish/:restaurant_id", restaurantController.GetDishesByRestaurantId)
 
 	restaurantRouters.Use(middlewares.JWTMiddleware())
+	restaurantRouters.GET("/get-dish", restaurantController.GetDishesById)
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
 	restaurantRouters.POST("/update-time-slot", restaurantController.UpdateTimeSlot)
 	restaurantRouters.POST("/create-dish", restaurantController.CreateDish)
@@ -138,6 +143,16 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters.GET("/get-reservation/:reservation_id", reservationController.GetReservationById)
 	reservationRouters.GET("/get-my-reservation", reservationController.GetReservationByUserId)
 	reservationRouters.POST("/add-dish/:reservation_id", reservationController.AddDishItem)
+}
+
+func (s *echoServer) initReviewRoute() {
+	reviewRepository := reviewRepository.NewReviewRepository(s.db)
+	reviewService := reviewService.NewReviewService(reviewRepository)
+	reviewController := reviewController.NewReviewController(reviewService)
+
+	reviewRouters := s.app.Group("/review")
+	reviewRouters.Use(middlewares.JWTMiddleware())
+	reviewRouters.POST("/create-review/:reservation-id", reviewController.CreateReview)
 }
 
 func (s *echoServer) initImageRoute() {

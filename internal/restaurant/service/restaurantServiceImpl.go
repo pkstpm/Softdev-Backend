@@ -167,6 +167,14 @@ func (r *restaurantServiceImpl) GetTablesByRestaurantId(restaurantId string) ([]
 	return tables, nil
 }
 
+func (r *restaurantServiceImpl) GetAllDishesByRestaurantId(restaurantId string) ([]model.Dish, error) {
+	dishes, err := r.restaurantRepository.GetAllDishesByRestaurantId(restaurantId)
+	if err != nil {
+		return nil, err
+	}
+	return dishes, nil
+}
+
 func (r *restaurantServiceImpl) CreateTable(userId string, dto *dto.CreateTableDTO) error {
 	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
@@ -226,4 +234,12 @@ func (r *restaurantServiceImpl) DeletetRestaurantPicture(userId string, pictureI
 	}
 
 	return nil
+}
+
+func (r *restaurantServiceImpl) GetRestaurantByUserId(userId string) (*model.Restaurant, error) {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return nil, err
+	}
+	return restaurant, nil
 }

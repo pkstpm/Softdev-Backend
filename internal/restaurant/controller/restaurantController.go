@@ -7,6 +7,8 @@ type RestaurantController interface {
 	FindByName(c echo.Context) error
 	FindByCategory(c echo.Context) error
 	CreateDish(c echo.Context) error
+	GetDishesByRestaurantId(c echo.Context) error
+	GetDishesById(c echo.Context) error
 	UpdateDish(c echo.Context) error
 	GetTimeSlot(c echo.Context) error
 	GetTimeSlotById(c echo.Context) error

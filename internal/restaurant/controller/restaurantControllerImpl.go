@@ -257,3 +257,31 @@ func (h *restaurantController) GetAllRestaurants(c echo.Context) error {
 
 	return utils.SendSuccess(c, "Get All Restarants Success", restaurants)
 }
+
+func (h *restaurantController) GetDishesByRestaurantId(c echo.Context) error {
+	restaurantId := c.Param("restaurant_id")
+	dishes, err := h.restaurantService.GetAllDishesByRestaurantId(restaurantId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Get Dishes By Restaurant Id Success", dishes)
+}
+
+func (h *restaurantController) GetDishesById(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	restaurant, err := h.restaurantService.GetRestaurantByUserId(userId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", err.Error())
+	}
+
+	dishes, err := h.restaurantService.GetAllDishesByRestaurantId(restaurant.ID.String())
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to get dishes", err.Error())
+	}
+	if len(dishes) == 0 {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", "No dishes found")
+	}
+
+	return utils.SendSuccess(c, "Get Dishes By User Id Success", dishes)
+}

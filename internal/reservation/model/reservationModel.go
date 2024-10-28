@@ -27,6 +27,7 @@ type Reservation struct {
 	EndTime      time.Time  `gorm:"not null;index"`
 	Status       StatusType `gorm:"not null"`
 	TotalPrice   int        `gorm:"not null"`
+	ReviewID     uuid.UUID  `gorm:"type:uuid"`
 	DishItems    []DishItem `gorm:"foreignKey:ReservationID"`
 }
 
