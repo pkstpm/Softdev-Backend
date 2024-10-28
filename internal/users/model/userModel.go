@@ -15,21 +15,22 @@ const (
 
 type User struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	Username    string    `gorm:"unique;not null"`
-	Password    string    `gorm:"not null"`
-	Email       string    `gorm:"unique;not null"`
-	PhoneNumber string    `gorm:"not null"`
-	DisplayName string    `gorm:"not null"`
-	UserType    UserType  `gorm:"not null"`
+	ID          uuid.UUID   `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Username    string      `gorm:"unique;not null"`
+	Password    string      `gorm:"not null"`
+	Email       string      `gorm:"unique;not null"`
+	PhoneNumber string      `gorm:"not null"`
+	DisplayName string      `gorm:"not null"`
+	UserType    UserType    `gorm:"not null"`
+	Favourite   []Favourite `gorm:"foreignKey:UserID"`
 	ImgPath     string
 }
 
 type Favourite struct {
 	gorm.Model
-	ID         uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	UserID     uuid.UUID `gorm:"type:uuid;not null;foreignkey:User"`
-	Restaurant uuid.UUID `gorm:"foreignKey:RestaurantID"`
+	ID           uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
+	UserID       uuid.UUID `gorm:"type:uuid;not null"` // User relationship
+	RestaurantID uuid.UUID `gorm:"type:uuid;not null"` // Correctly references RestaurantID
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

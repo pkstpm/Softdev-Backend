@@ -42,10 +42,55 @@ func (h *reservationController) CreateReservation(c echo.Context) error {
 		return utils.SendError(c, http.StatusBadRequest, "Validation failed", err.Error())
 	}
 
-	err = h.reservationService.CreateReservation(userId, createReservationDTO)
+	reservationId, err := h.reservationService.CreateReservation(userId, createReservationDTO)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Create reservation failed", err.Error())
 	}
 
-	return utils.SendSuccess(c, "Reservation created successfully", nil)
+	return utils.SendSuccess(c, "Reservation created successfully", reservationId)
+}
+
+func (h *reservationController) GetReservationById(c echo.Context) error {
+	reservationId := c.Param("reservation_id")
+
+	reservation, err := h.reservationService.GetReservationById(reservationId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Get reservation by ID failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Reservation retrieved successfully", reservation)
+}
+
+func (h *reservationController) GetReservationByUserId(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+
+	reservations, err := h.reservationService.GetReservationsByUserId(userId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Get reservations by user ID failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Reservations retrieved successfully", reservations)
+}
+
+func (h *reservationController) AddDishItem(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	reservationId := c.Param("reservation_id")
+
+	var addDishItemDTO dto.AddDishItemDTO
+
+	if err := c.Bind(&addDishItemDTO); err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Invalid input", nil)
+	}
+
+	if err := validate.Struct(&addDishItemDTO); err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Validation failed", err.Error())
+	}
+
+	err := h.reservationService.AddDishItem(userId, reservationId, addDishItemDTO)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Add dish item failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Dish item added successfully", nil)
+
 }

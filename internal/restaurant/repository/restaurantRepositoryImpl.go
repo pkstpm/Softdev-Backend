@@ -41,6 +41,15 @@ func (r *restaurantRepository) GetAllRestaurants() ([]model.Restaurant, error) {
 	return restaurants, nil
 }
 
+func (r *restaurantRepository) GetDishesByRestaurantId(restaurantId string) ([]model.Dish, error) {
+	var dishes []model.Dish
+	err := r.db.Where("restaurant_id = ?", restaurantId).Find(&dishes).Error
+	if err != nil {
+		return nil, err
+	}
+	return dishes, nil
+}
+
 // FindRestaurantByName performs a case-insensitive partial match search for a restaurant by name
 func (r *restaurantRepository) FindRestaurantByName(name string) ([]model.Restaurant, error) {
 	var restaurants []model.Restaurant
@@ -55,11 +64,10 @@ func (r *restaurantRepository) FindRestaurantByName(name string) ([]model.Restau
 
 // FindRestaurantByCategory performs a case-insensitive partial match search for restaurants by category
 func (r *restaurantRepository) FindRestaurantByCategory(category string) ([]model.Restaurant, error) {
-	var restaurants []model.Restaurant
-	searchPattern := "%" + category + "%" // This will match any category containing the search term
+	var restaurants []model.Restaurant // This will match any category containing the search term
 
 	// Use LIKE for partial matching
-	if err := r.db.Preload("Images").Where("category ILIKE ?", searchPattern).Find(&restaurants).Error; err != nil {
+	if err := r.db.Preload("Images").Where("category = ?", category).Find(&restaurants).Error; err != nil {
 		return nil, err
 	}
 	return restaurants, nil

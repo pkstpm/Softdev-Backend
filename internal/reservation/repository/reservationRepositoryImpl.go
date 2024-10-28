@@ -57,3 +57,20 @@ func (r *reservationRepository) GetReservationByRestaurantId(restaurantId string
 	}
 	return reservations, nil
 }
+
+func (r *reservationRepository) GetReservationByUserId(userId string) ([]model.Reservation, error) {
+	var reservations []model.Reservation
+	err := r.db.Where("user_id = ?", userId).Find(&reservations).Error
+	if err != nil {
+		return nil, err
+	}
+	return reservations, nil
+}
+
+func (r *reservationRepository) UpdateReservation(reservation *model.Reservation) error {
+	err := r.db.Save(reservation).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

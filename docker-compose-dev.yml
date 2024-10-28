@@ -15,6 +15,7 @@ services:
       - sd-pgadmin
     volumes:
       - .:/app/
+      - ./uploads:/app/uploads
     restart: unless-stopped
 
   sd-db:

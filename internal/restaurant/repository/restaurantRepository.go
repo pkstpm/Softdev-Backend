@@ -15,6 +15,7 @@ type RestaurantRepository interface {
 
 	FindDishById(dishId string) (*model.Dish, error)
 	CreateDish(dish *model.Dish) error
+	GetDishesByRestaurantId(restaurantId string) ([]model.Dish, error)
 	UpdateDish(dish *model.Dish) error
 	GetDishPrice(dishId uuid.UUID) (int, error)
 

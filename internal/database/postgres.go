@@ -6,8 +6,10 @@ import (
 	"sync"
 
 	"github.com/pkstpm/Softdev-Backend/internal/config"
+	notificationModel "github.com/pkstpm/Softdev-Backend/internal/notification/model"
 	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	restaurantModel "github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
+	reviewModel "github.com/pkstpm/Softdev-Backend/internal/review/model"
 	userModels "github.com/pkstpm/Softdev-Backend/internal/users/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -73,8 +75,8 @@ func (p *postgresDatabase) Migrate() {
 	// p.GetDb().Exec("CREATE TYPE user_type AS ENUM ('Customer', 'Restaurant');")
 	// p.GetDb().Exec("CREATE TYPE status_type AS ENUM ('Accepted', 'Denied', 'Completed', 'Cancelled', 'Pending);")
 	// Migrate the schema
-	// p.GetDb().Migrator().DropTable(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{})
-	err = p.GetDb().AutoMigrate(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{})
+	// p.GetDb().Migrator().DropTable(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{}, &userModels.Favourite{}, &reviewModel.Review{}, &notificationModel.Notification{})
+	err = p.GetDb().AutoMigrate(&userModels.User{}, &restaurantModel.Restaurant{}, &restaurantModel.Dish{}, &restaurantModel.Table{}, &restaurantModel.TimeSlot{}, &restaurantModel.Dish{}, &reservationModel.Reservation{}, &reservationModel.DishItem{}, &restaurantModel.Image{}, &userModels.Favourite{}, &reviewModel.Review{}, &notificationModel.Notification{})
 	if err != nil {
 		panic("failed to migrate database")
 	}

@@ -122,7 +122,7 @@ func (h *userController) UploadUserProfilePicture(c echo.Context) error {
 	}
 
 	// Call your service to handle the upload
-	user, err := h.userService.UploadUserProfilePicture(userId, newFileName)
+	user, err := h.userService.UploadUserProfilePicture(userId, dstPath)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Failed to upload profile picture", err)
 	}

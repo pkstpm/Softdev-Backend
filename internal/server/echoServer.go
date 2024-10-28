@@ -58,6 +58,8 @@ func (s *echoServer) Start() {
 		return c.String(200, "OK")
 	})
 
+	s.app.Static("/uploads", "uploads")
+
 	s.app.Group(s.conf.Server.Prefix)
 	s.initAuthRoute()
 	s.initUserRoute()
@@ -106,7 +108,7 @@ func (s *echoServer) initRestaurantRoute() {
 
 	searchrouter := s.app.Group("/search")
 	searchrouter.GET("/:name", restaurantController.FindByName)
-	searchrouter.GET("/restaurant/:category", restaurantController.FindByCategory)
+	searchrouter.GET("/category/:category", restaurantController.FindByCategory)
 
 	restaurantRouters := s.app.Group("/restaurant")
 	restaurantRouters.GET("/get-all", restaurantController.GetAllRestaurants)
@@ -133,6 +135,9 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters := s.app.Group("/reservation")
 	reservationRouters.Use(middlewares.JWTMiddleware())
 	reservationRouters.POST("/create-reservation", reservationController.CreateReservation)
+	reservationRouters.GET("/get-reservation/:reservation_id", reservationController.GetReservationById)
+	reservationRouters.GET("/get-my-reservation", reservationController.GetReservationByUserId)
+	reservationRouters.POST("/add-dish/:reservation_id", reservationController.AddDishItem)
 }
 
 func (s *echoServer) initImageRoute() {
