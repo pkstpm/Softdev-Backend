@@ -33,6 +33,14 @@ func (r *restaurantRepository) FindRestaurantByID(restaurantId string) (*model.R
 	return &restaurant, nil
 }
 
+func (r *restaurantRepository) GetAllRestaurants() ([]model.Restaurant, error) {
+	var restaurants []model.Restaurant
+	if err := r.db.Preload("Images").Find(&restaurants).Error; err != nil {
+		return nil, err
+	}
+	return restaurants, nil
+}
+
 // FindRestaurantByName performs a case-insensitive partial match search for a restaurant by name
 func (r *restaurantRepository) FindRestaurantByName(name string) ([]model.Restaurant, error) {
 	var restaurants []model.Restaurant

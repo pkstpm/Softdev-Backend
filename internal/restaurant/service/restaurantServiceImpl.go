@@ -79,6 +79,14 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO
 	return nil
 }
 
+func (r *restaurantServiceImpl) GetAllRestaurants() ([]model.Restaurant, error) {
+	restaurants, err := r.restaurantRepository.GetAllRestaurants()
+	if err != nil {
+		return nil, err
+	}
+	return restaurants, nil
+}
+
 func (r *restaurantServiceImpl) CreateTimeSlot(userId string) error {
 
 	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
@@ -86,7 +94,7 @@ func (r *restaurantServiceImpl) CreateTimeSlot(userId string) error {
 		return err
 	}
 
-	for i := 1; i <= 7; i++ {
+	for i := 0; i <= 6; i++ {
 		timeslot := &model.TimeSlot{
 			RestaurantID: restaurant.ID,
 			Weekday:      i,

@@ -248,3 +248,12 @@ func (h *restaurantController) GetTimeSlotById(c echo.Context) error {
 
 	return utils.SendSuccess(c, "TimeSlot retrieved successfully", timeSlots)
 }
+
+func (h *restaurantController) GetAllRestaurants(c echo.Context) error {
+	restaurants, err := h.restaurantService.GetAllRestaurants()
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Get All Restarants Success", restaurants)
+}

@@ -109,6 +109,7 @@ func (s *echoServer) initRestaurantRoute() {
 	searchrouter.GET("/restaurant/:category", restaurantController.FindByCategory)
 
 	restaurantRouters := s.app.Group("/restaurant")
+	restaurantRouters.GET("/get-all", restaurantController.GetAllRestaurants)
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
 	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
 	restaurantRouters.GET("/get-time-slot/:restaurant_id", restaurantController.GetTimeSlotById)

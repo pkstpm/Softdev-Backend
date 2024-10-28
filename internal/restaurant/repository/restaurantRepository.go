@@ -6,6 +6,7 @@ import (
 )
 
 type RestaurantRepository interface {
+	GetAllRestaurants() ([]model.Restaurant, error)
 	FindRestaurantByUserID(userId string) (*model.Restaurant, error)
 	FindRestaurantByID(restaurantId string) (*model.Restaurant, error)
 	FindRestaurantByName(name string) ([]model.Restaurant, error)

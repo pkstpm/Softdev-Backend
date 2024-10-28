@@ -6,6 +6,7 @@ import (
 )
 
 type RestaurantService interface {
+	GetAllRestaurants() ([]model.Restaurant, error)
 	FindRestaurantByName(name string) ([]model.Restaurant, error)
 	FindRestaurantByCategory(category string) ([]model.Restaurant, error)
 	CreateDish(userId string, dto *dto.CreateDishDTO) error

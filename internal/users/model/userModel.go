@@ -25,6 +25,13 @@ type User struct {
 	ImgPath     string
 }
 
+type Favourite struct {
+	gorm.Model
+	ID         uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	UserID     uuid.UUID `gorm:"type:uuid;not null;foreignkey:User"`
+	Restaurant uuid.UUID `gorm:"foreignKey:RestaurantID"`
+}
+
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New()
 	if len(u.Password) > 0 {

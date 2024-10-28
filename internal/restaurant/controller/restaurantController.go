@@ -3,6 +3,7 @@ package controller
 import "github.com/labstack/echo/v4"
 
 type RestaurantController interface {
+	GetAllRestaurants(c echo.Context) error
 	FindByName(c echo.Context) error
 	FindByCategory(c echo.Context) error
 	CreateDish(c echo.Context) error
