@@ -7,7 +7,7 @@ import (
 
 type ReservationRepository interface {
 	CreateReservation(reservation *model.Reservation) (uuid.UUID, error)
-	CreateDishItem(dishItem *model.DishItem) error
+	CreateDishItem(dishItem *model.DishItem) (*model.DishItem, error)
 	GetReservationById(reservationId string) (*model.Reservation, error)
 	UpdateReservation(reservation *model.Reservation) error
 	GetReservationByUserId(userId string) ([]model.Reservation, error)

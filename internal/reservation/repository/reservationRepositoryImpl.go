@@ -23,12 +23,12 @@ func (r *reservationRepository) CreateReservation(reservation *model.Reservation
 	return reservation.ID, nil
 }
 
-func (r *reservationRepository) CreateDishItem(dishItem *model.DishItem) error {
+func (r *reservationRepository) CreateDishItem(dishItem *model.DishItem) (*model.DishItem, error) {
 	err := r.db.Create(dishItem).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return dishItem, nil
 }
 
 func (r *reservationRepository) GetReservationById(reservationId string) (*model.Reservation, error) {
@@ -60,7 +60,7 @@ func (r *reservationRepository) GetReservationByRestaurantId(restaurantId string
 
 func (r *reservationRepository) GetReservationByUserId(userId string) ([]model.Reservation, error) {
 	var reservations []model.Reservation
-	err := r.db.Where("user_id = ?", userId).Find(&reservations).Error
+	err := r.db.Preload("DishItems").Where("user_id = ?", userId).Find(&reservations).Error
 	if err != nil {
 		return nil, err
 	}

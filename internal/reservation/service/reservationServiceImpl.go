@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/dto"
@@ -51,6 +52,7 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 		RestaurantID: dto.RestaurantID,
 		StartTime:    dto.StartTime,
 		EndTime:      dto.EndTime,
+		Status:       "Pending",
 		TotalPrice:   0,
 	}
 
@@ -84,42 +86,67 @@ func (r *reservationServiceImpl) AddDishItem(userId string, reservationId string
 		return err
 	}
 
+	log.Println(reservation)
+
+	// Ensure that the reservation is properly initialized
+	if reservation.ID == uuid.Nil {
+		return errors.New("reservation not found or invalid")
+	}
+
 	if reservation.UserID.String() != userId {
 		return errors.New("reservation does not belong to user")
 	}
 
 	dishes, err := r.restaurantRepository.GetDishesByRestaurantId(reservation.RestaurantID.String())
-
 	if err != nil {
 		return err
 	}
 
-	prices := 0
+	totalPrice := 0
 
 	for _, dish := range dto.DishItems {
 		for _, existingDish := range dishes {
 			if dish.DishID == existingDish.ID {
+				// Parse the UUIDs and handle any errors
+				reservationID, err := uuid.Parse(reservation.ID.String())
+				if err != nil {
+					log.Printf("Error parsing reservation ID: %v", err)
+					continue // Skip this iteration if parsing fails
+				}
+
+				log.Println(reservationID)
+
+				dishID, err := uuid.Parse(existingDish.ID.String())
+				if err != nil {
+					log.Printf("Error parsing dish ID: %v", err)
+					continue // Skip this iteration if parsing fails
+				}
+
+				log.Println(dishID)
+
 				dishItem := &model.DishItem{
-					ReservationID: reservation.ID,
-					DishID:        dish.DishID,
+					ReservationID: reservationID,
+					DishID:        dishID,
 					Quantity:      dish.Quantity,
 					Price:         existingDish.Price,
 					Option:        dish.Option,
 					Comment:       dish.Comment,
 				}
-				prices += existingDish.Price * dish.Quantity
-				err = r.reservationRepository.CreateDishItem(dishItem)
-				if err != nil {
-					return err
+				totalPrice += existingDish.Price * dish.Quantity
+
+				// Attempt to create the dish item
+				if _, err := r.reservationRepository.CreateDishItem(dishItem); err != nil {
+					log.Printf("Error creating dish item for dish ID %s: %v", dish.DishID, err)
+					continue // Continue processing the rest of the items
 				}
 			}
 		}
 	}
 
-	reservation.TotalPrice = prices
+	// Update the total price of the reservation
+	reservation.TotalPrice = totalPrice
 
-	err = r.reservationRepository.UpdateReservation(reservation)
-	if err != nil {
+	if err := r.reservationRepository.UpdateReservation(reservation); err != nil {
 		return err
 	}
 

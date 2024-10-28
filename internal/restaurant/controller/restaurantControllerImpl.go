@@ -205,7 +205,7 @@ func (h *restaurantController) UploadRestaurantPictures(c echo.Context) error {
 		}
 
 		// Optionally, you can store the uploaded file path in a slice or database
-		uploadedFiles = append(uploadedFiles, newFileName)
+		uploadedFiles = append(uploadedFiles, dstPath)
 	}
 
 	// Call your service to handle the uploaded files if needed

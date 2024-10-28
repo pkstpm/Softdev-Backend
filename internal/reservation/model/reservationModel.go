@@ -31,13 +31,11 @@ type Reservation struct {
 }
 
 type DishItem struct {
-	gorm.Model
-	ID            uuid.UUID   `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	DishID        uuid.UUID   `gorm:"not null"`
-	ReservationID uuid.UUID   `gorm:"not null"`
-	Reservation   Reservation `gorm:"type:uuid;not null;foreignKey:Reservation"`
-	Quantity      int         `gorm:"not null"`
-	Price         int         `gorm:"not null"`
+	ID            uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	DishID        uuid.UUID `gorm:"not null"`
+	ReservationID uuid.UUID `gorm:"not null"`
+	Quantity      int       `gorm:"not null"`
+	Price         int       `gorm:"not null"`
 	Option        string
 	Comment       string
 }

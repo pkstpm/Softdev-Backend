@@ -35,6 +35,7 @@ type UserResponse struct {
 	Email       string `json:"email"`
 	Role        string `json:"role"`
 	PhoneNumebr string `json:"phone_number"`
+	ImgPath     string `json:"img_path"`
 	AccessToken string `json:"access_token"`
 }
 

@@ -110,6 +110,7 @@ func (h *authController) Me(c echo.Context) error {
 		Username:    user.Username,
 		Email:       user.Email,
 		Role:        string(user.UserType),
+		ImgPath:     user.ImgPath,
 		PhoneNumebr: user.PhoneNumber,
 		AccessToken: accessToken,
 	}
