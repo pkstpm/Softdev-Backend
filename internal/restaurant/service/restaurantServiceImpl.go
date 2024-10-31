@@ -33,10 +33,15 @@ func (r *restaurantServiceImpl) FindRestaurantByCategory(category string) ([]mod
 	return restaurants, nil
 }
 
-func (r *restaurantServiceImpl) CreateDish(userId string, dto *dto.CreateDishDTO) error {
+func (r *restaurantServiceImpl) CreateDish(userId string, dto *dto.CreateDishDTO, imgPath string) error {
 	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
 		return err
+	}
+
+	_, err = r.restaurantRepository.FindDishByName(dto.Name, restaurant.ID.String())
+	if err == nil {
+		return errors.New("dish name already exists")
 	}
 
 	var dish = &model.Dish{
@@ -44,6 +49,7 @@ func (r *restaurantServiceImpl) CreateDish(userId string, dto *dto.CreateDishDTO
 		Name:         dto.Name,
 		Description:  dto.Description,
 		Price:        dto.Price,
+		ImgPath:      imgPath,
 	}
 
 	err = r.restaurantRepository.CreateDish(dish)
@@ -66,6 +72,11 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO
 
 	if restaurant.ID != dish.RestaurantID {
 		return errors.New("dish does not belong to restaurant")
+	}
+
+	_, err = r.restaurantRepository.FindDishByName(dto.Name, restaurant.ID.String())
+	if err == nil {
+		return errors.New("dish name already exists")
 	}
 
 	dish.Name = dto.Name

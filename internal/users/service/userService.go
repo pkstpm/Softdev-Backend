@@ -11,4 +11,6 @@ type UserService interface {
 	ChangePassword(userId string, dto dto.ChangePasswordDTO) error
 	GetUser(userId string) (*model.User, error)
 	UploadUserProfilePicture(userId string, url string) (*model.User, error)
+	AddFavouriteRestaurant(userId string, restaurantId string) error
+	RemoveFavouriteRestaurant(userId string, restaurantId string) error
 }

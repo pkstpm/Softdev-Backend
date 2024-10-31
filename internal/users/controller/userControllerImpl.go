@@ -130,3 +130,27 @@ func (h *userController) UploadUserProfilePicture(c echo.Context) error {
 	// Return success response
 	return utils.SendSuccess(c, "Profile picture uploaded successfully", user.ImgPath)
 }
+
+func (h *userController) AddFavouriteRestaurant(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	restaurantId := c.Param("restaurant_id")
+
+	err := h.userService.AddFavouriteRestaurant(userId, restaurantId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to add favourite restaurant", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Favourite restaurant added successfully", nil)
+}
+
+func (h *userController) RemoveFavouriteRestaurant(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	restaurantId := c.Param("restaurant_id")
+
+	err := h.userService.RemoveFavouriteRestaurant(userId, restaurantId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to remove favourite restaurant", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Favourite restaurant removed successfully", nil)
+}

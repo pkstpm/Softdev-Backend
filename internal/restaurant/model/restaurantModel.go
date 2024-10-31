@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/google/uuid"
 	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
+	reviewModel "github.com/pkstpm/Softdev-Backend/internal/review/model"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +21,7 @@ type Restaurant struct {
 	Reservations   []reservationModel.Reservation `gorm:"foreignKey:RestaurantID"`
 	Dishes         []Dish                         `gorm:"foreignKey:RestaurantID"`
 	TimeSlots      []TimeSlot                     `gorm:"foreignKey:RestaurantID"`
-	// Reviews        []Review      `gorm:"foreignKey:RestaurantID"`
+	Reviews        []reviewModel.Review           `gorm:"foreignKey:RestaurantID"`
 }
 
 type Image struct {
@@ -32,7 +33,7 @@ type Image struct {
 type Table struct {
 	ID           uuid.UUID                      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	RestaurantID uuid.UUID                      `gorm:"type:uuid;not null;foreignkey:Restaurant;"`
-	TableNumber  int                            `gorm:"not null"`
+	TableNumber  string                         `gorm:"not null"`
 	Capacity     int                            `gorm:"not null"`
 	Reservations []reservationModel.Reservation `gorm:"foreignKey:TableID" json:"-"` // One-to-many relationship with Reservation
 }

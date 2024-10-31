@@ -7,4 +7,6 @@ type UserController interface {
 	ViewProfile(c echo.Context) error
 	ChangePassword(c echo.Context) error
 	UploadUserProfilePicture(c echo.Context) error
+	AddFavouriteRestaurant(c echo.Context) error
+	RemoveFavouriteRestaurant(c echo.Context) error
 }

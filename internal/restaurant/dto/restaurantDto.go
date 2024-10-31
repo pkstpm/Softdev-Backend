@@ -24,6 +24,6 @@ type UpdateDishDTO struct {
 }
 
 type CreateTableDTO struct {
-	TableNumber int `json:"table_number" validate:"required"`
-	Capacity    int `json:"capacity" validate:"required"`
+	TableNumber string `json:"table_number" validate:"required"`
+	Capacity    int    `json:"capacity" validate:"required"`
 }

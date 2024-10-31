@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"errors"
+	"log"
+
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/database"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
@@ -33,10 +36,19 @@ func (r *reservationRepository) CreateDishItem(dishItem *model.DishItem) (*model
 
 func (r *reservationRepository) GetReservationById(reservationId string) (*model.Reservation, error) {
 	var reservation model.Reservation
-	err := r.db.Where("id = ?", reservationId).First(&reservation).Error
+	log.Printf("reservationId: %s", reservationId)
+	err := r.db.Preload("DishItems").Where("id = ?", reservationId).First(&reservation).Error
+
+	// Check if the record was not found
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil // Explicitly return nil for reservation if not found
+	}
+
+	// Return any other errors
 	if err != nil {
 		return nil, err
 	}
+
 	return &reservation, nil
 }
 

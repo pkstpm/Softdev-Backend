@@ -68,6 +68,7 @@ func (s *echoServer) Start() {
 	s.initUserRoute()
 	s.initRestaurantRoute()
 	s.initReservationRoute()
+	s.initReviewRoute()
 	s.initImageRoute()
 
 	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
@@ -102,6 +103,8 @@ func (s *echoServer) initUserRoute() {
 	userRouters.POST("/upload-profile-picture", userController.UploadUserProfilePicture)
 	userRouters.PUT("/edit-profile", userController.UpdateProfile)
 	userRouters.PUT("/change-password", userController.ChangePassword)
+	userRouters.POST("/add-favourite-restaurant/:restaurant_id", userController.AddFavouriteRestaurant)
+	userRouters.DELETE("/remove-favourite-restaurant/:restaurant_id", userController.RemoveFavouriteRestaurant)
 }
 
 func (s *echoServer) initRestaurantRoute() {
@@ -147,7 +150,8 @@ func (s *echoServer) initReservationRoute() {
 
 func (s *echoServer) initReviewRoute() {
 	reviewRepository := reviewRepository.NewReviewRepository(s.db)
-	reviewService := reviewService.NewReviewService(reviewRepository)
+	reservationRepository := reservationRepository.NewReservationRepository(s.db)
+	reviewService := reviewService.NewReviewService(reviewRepository, reservationRepository)
 	reviewController := reviewController.NewReviewController(reviewService)
 
 	reviewRouters := s.app.Group("/review")

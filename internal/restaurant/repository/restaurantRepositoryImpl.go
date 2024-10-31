@@ -15,6 +15,15 @@ func NewRestaurantRepository(db database.Database) RestaurantRepository {
 	return &restaurantRepository{db: db.GetDb()}
 }
 
+func (r *restaurantRepository) FindDishByName(name string, restaurantId string) (*model.Dish, error) {
+	var dish model.Dish
+	err := r.db.Where("name = ? AND restaurant_id = ?", name, restaurantId).First(&dish).Error
+	if err != nil {
+		return nil, err
+	}
+	return &dish, nil
+}
+
 func (r *restaurantRepository) GetAllDishesByRestaurantId(restaurantId string) ([]model.Dish, error) {
 	var dishes []model.Dish
 	err := r.db.Where("restaurant_id = ?", restaurantId).Find(&dishes).Error

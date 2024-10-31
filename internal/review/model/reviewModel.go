@@ -9,6 +9,7 @@ import (
 type Review struct {
 	gorm.Model
 	ID             uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	RestaurantID   uuid.UUID      `gorm:"type:uuid;not null;foreignkey:Restaurant"`
 	ReservationID  uuid.UUID      `gorm:"type:uuid;not null;foreignkey:Reservation"`
 	UserID         uuid.UUID      `gorm:"type:uuid;not null;foreignkey:User"`
 	User           userModel.User `gorm:"foreignKey:UserID;references:ID"`

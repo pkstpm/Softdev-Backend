@@ -9,4 +9,7 @@ type UserRepository interface {
 	FindMatchUsernameOrEmail(username string, email string) bool
 	EditProfileUser(user *model.User) error
 	UpdateUserType(userId string, role string) error
+	SearchFavouriteRestaurant(userId string, restaurantId string) bool
+	AddFavouriteRestaurant(favourite *model.Favourite) error
+	RemoveFavouriteRestaurant(restaurantId string) error
 }

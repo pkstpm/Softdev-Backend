@@ -2,7 +2,10 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"log"
 
+	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/users/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/users/model"
 	"github.com/pkstpm/Softdev-Backend/internal/users/repository"
@@ -90,4 +93,47 @@ func (s *userServiceImpl) UploadUserProfilePicture(userId string, url string) (*
 	}
 
 	return user, nil
+}
+
+func (s *userServiceImpl) AddFavouriteRestaurant(userId string, restaurantId string) error {
+	log.Println(userId)
+	log.Println(restaurantId)
+	if s.userRepository.SearchFavouriteRestaurant(userId, restaurantId) {
+		return errors.New("restaurant already in favourite")
+	}
+
+	parsedUserId, err := uuid.Parse(userId)
+	if err != nil {
+		return fmt.Errorf("invalid UUID format: %w", err)
+	}
+
+	parsedRestaurantId, err := uuid.Parse(restaurantId)
+	if err != nil {
+		return fmt.Errorf("invalid UUID format: %w", err)
+	}
+
+	favourite := &model.Favourite{
+		UserID:       parsedUserId,
+		RestaurantID: parsedRestaurantId,
+	}
+
+	err = s.userRepository.AddFavouriteRestaurant(favourite)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *userServiceImpl) RemoveFavouriteRestaurant(userId string, restaurantId string) error {
+	if !s.userRepository.SearchFavouriteRestaurant(userId, restaurantId) {
+		return errors.New("restaurant not in favourite")
+	}
+
+	err := s.userRepository.RemoveFavouriteRestaurant(restaurantId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

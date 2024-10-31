@@ -29,14 +29,19 @@ type RegisterRestaurantDTO struct {
 }
 
 type UserResponse struct {
-	ID          string `json:"id"`
-	DisplayName string `json:"display_name"`
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	Role        string `json:"role"`
-	PhoneNumebr string `json:"phone_number"`
-	ImgPath     string `json:"img_path"`
-	AccessToken string `json:"access_token"`
+	ID          string                  `json:"id"`
+	DisplayName string                  `json:"display_name"`
+	Username    string                  `json:"username"`
+	Email       string                  `json:"email"`
+	Role        string                  `json:"role"`
+	PhoneNumebr string                  `json:"phone_number"`
+	ImgPath     string                  `json:"img_path"`
+	AccessToken string                  `json:"access_token"`
+	Favourite   []FavoriteRestaurantDTO `json:"favourite"`
+}
+
+type FavoriteRestaurantDTO struct {
+	RestaurantID string `json:"restaurant_id" validate:"required"`
 }
 
 func CustomUsernameValidator(fl validator.FieldLevel) bool {

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -104,6 +105,14 @@ func (h *authController) Me(c echo.Context) error {
 		return utils.SendError(c, http.StatusInternalServerError, "Login failed", nil)
 	}
 
+	var favourites []dto.FavoriteRestaurantDTO
+	for _, fav := range user.Favourite {
+		favourites = append(favourites, dto.FavoriteRestaurantDTO{
+			RestaurantID: fav.RestaurantID.String(),
+		})
+		log.Printf(fav.RestaurantID.String())
+	}
+
 	userResponse := dto.UserResponse{
 		ID:          user.ID.String(),
 		DisplayName: user.DisplayName,
@@ -112,6 +121,7 @@ func (h *authController) Me(c echo.Context) error {
 		Role:        string(user.UserType),
 		ImgPath:     user.ImgPath,
 		PhoneNumebr: user.PhoneNumber,
+		Favourite:   favourites,
 		AccessToken: accessToken,
 	}
 

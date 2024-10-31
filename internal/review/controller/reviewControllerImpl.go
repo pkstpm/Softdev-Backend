@@ -26,7 +26,7 @@ func NewReviewController(reviewService service.ReviewService) ReviewController {
 
 func (h *reviewController) CreateReview(c echo.Context) error {
 	userId := c.Get("user_id").(string)
-	reservationID := c.Param("reservation_id")
+	reservationID := c.Param("reservation-id")
 	var reviewDTO dto.ReviewDTO
 	if err := c.Bind(&reviewDTO); err != nil {
 		return utils.SendError(c, http.StatusBadRequest, "Invalid input", nil)
@@ -36,7 +36,7 @@ func (h *reviewController) CreateReview(c echo.Context) error {
 		return utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
 	}
 
-	err := h.reviewService.CreateReview(userId, reservationID, &reviewDTO)
+	err := h.reviewService.CreateReview(userId, reservationID, reviewDTO)
 	if err != nil {
 		return utils.SendError(c, http.StatusInternalServerError, "Create review failed", err.Error())
 	}

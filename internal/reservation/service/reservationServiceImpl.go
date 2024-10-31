@@ -41,7 +41,7 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 
 	reservations := table.Reservations
 	for _, reservation := range reservations {
-		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) {
+		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) && reservation.Status == "Approved" {
 			return "", errors.New("table is already reserved")
 		}
 	}
