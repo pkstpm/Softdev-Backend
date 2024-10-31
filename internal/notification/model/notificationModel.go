@@ -15,5 +15,4 @@ type Notification struct {
 	Content       string    `gorm:"not null"`
 	IsRead        bool      `gorm:"not null"`
 	Receiver      string    `gorm:"not null"`
-	FromName      string    `gorm:"not null"`
 }

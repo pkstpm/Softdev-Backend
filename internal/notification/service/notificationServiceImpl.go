@@ -30,7 +30,6 @@ func (s *notificationServiceImpl) GetUserNotReadNotification(userId string) ([]d
 			NotificationId: notification.ID.String(),            // Assuming ID is of type uuid.UUID
 			ReservationId:  notification.ReservationID.String(), // Change this if it's not a UUID
 			Content:        notification.Content,
-			From:           notification.FromName,
 			Time:           notification.Time,
 		})
 		notification.IsRead = true
@@ -58,7 +57,6 @@ func (s *notificationServiceImpl) GetRestaurantNotReadNotification(userId string
 			NotificationId: notification.ID.String(),            // Assuming ID is of type uuid.UUID
 			ReservationId:  notification.ReservationID.String(), // Change this if it's not a UUID
 			Content:        notification.Content,
-			From:           notification.FromName,
 			Time:           notification.Time,
 		})
 		notification.IsRead = true
@@ -81,7 +79,6 @@ func (s *notificationServiceImpl) GetAllUserNotification(userId string) ([]dto.N
 			NotificationId: notification.ID.String(),
 			ReservationId:  notification.ReservationID.String(),
 			Content:        notification.Content,
-			From:           notification.FromName,
 			Time:           notification.Time,
 		})
 		notification.IsRead = true
@@ -108,7 +105,6 @@ func (s *notificationServiceImpl) GetAllRestaurantNotification(userId string) ([
 			NotificationId: notification.ID.String(),
 			ReservationId:  notification.ReservationID.String(),
 			Content:        notification.Content,
-			From:           notification.FromName,
 			Time:           notification.Time,
 		})
 		notification.IsRead = true

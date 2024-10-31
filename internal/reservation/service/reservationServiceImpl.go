@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	notificationModel "github.com/pkstpm/Softdev-Backend/internal/notification/model"
+	notificationRepository "github.com/pkstpm/Softdev-Backend/internal/notification/repository"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/repository"
@@ -13,12 +15,13 @@ import (
 )
 
 type reservationServiceImpl struct {
-	reservationRepository repository.ReservationRepository
-	restaurantRepository  restaurantRepository.RestaurantRepository
+	reservationRepository  repository.ReservationRepository
+	restaurantRepository   restaurantRepository.RestaurantRepository
+	notificationRepository notificationRepository.NotificationRepository
 }
 
-func NewReservationService(reservationRepository repository.ReservationRepository, restaurantRepository restaurantRepository.RestaurantRepository) ReservationService {
-	return &reservationServiceImpl{reservationRepository: reservationRepository, restaurantRepository: restaurantRepository}
+func NewReservationService(reservationRepository repository.ReservationRepository, restaurantRepository restaurantRepository.RestaurantRepository, notificationRepository notificationRepository.NotificationRepository) ReservationService {
+	return &reservationServiceImpl{reservationRepository: reservationRepository, restaurantRepository: restaurantRepository, notificationRepository: notificationRepository}
 }
 
 func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.CreateReservationDTO) (string, error) {
@@ -65,8 +68,8 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	}
 
 	reservations := table.Reservations
-	log.Printf("Reservations: %v", reservations)
 	for _, reservation := range reservations {
+		log.Println(reservation)
 		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) {
 			return "", errors.New("table is already reserved")
 		}
@@ -83,6 +86,22 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	}
 
 	reservation, err = r.reservationRepository.CreateReservation(reservation)
+	if err != nil {
+		return "", err
+	}
+
+	newNotification := &notificationModel.Notification{
+		UserID:        userId,
+		RestaurantID:  dto.RestaurantID,
+		ReservationID: reservation.ID,
+		Content:       "You have a new Reservation",
+		IsRead:        false,
+		Receiver:      "restaurant",
+		Time:          time.Now(),
+	}
+
+	err = r.notificationRepository.CreateNotification(newNotification)
+
 	if err != nil {
 		return "", err
 	}

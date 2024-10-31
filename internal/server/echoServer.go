@@ -147,7 +147,8 @@ func (s *echoServer) initRestaurantRoute() {
 func (s *echoServer) initReservationRoute() {
 	reservationRepository := reservationRepository.NewReservationRepository(s.db)
 	restaurantRepository := restaurantRepository.NewRestaurantRepository(s.db)
-	reservationService := reservationService.NewReservationService(reservationRepository, restaurantRepository)
+	notificationRepository := notificationRepository.NewNotificationRepository(s.db)
+	reservationService := reservationService.NewReservationService(reservationRepository, restaurantRepository, notificationRepository)
 	reservationController := reservationController.NewReservationController(reservationService)
 
 	reservationRouters := s.app.Group("/reservation")
