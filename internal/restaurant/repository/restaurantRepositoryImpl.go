@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/database"
+	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 	"gorm.io/gorm"
 )
@@ -24,6 +25,24 @@ func (r *restaurantRepository) FindDishByName(name string, restaurantId string) 
 	return &dish, nil
 }
 
+func (r *restaurantRepository) AddReservationToTable(tableId string, reservation *reservationModel.Reservation) error {
+	// Retrieve the existing table
+	var table model.Table
+	if err := r.db.Preload("Reservations").First(&table, "id = ?", tableId).Error; err != nil {
+		return err
+	}
+
+	// Append the new reservation
+	table.Reservations = append(table.Reservations, *reservation)
+
+	// Save the table with the new reservation
+	if err := r.db.Save(&table).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *restaurantRepository) GetAllDishesByRestaurantId(restaurantId string) ([]model.Dish, error) {
 	var dishes []model.Dish
 	err := r.db.Where("restaurant_id = ?", restaurantId).Find(&dishes).Error
@@ -35,7 +54,7 @@ func (r *restaurantRepository) GetAllDishesByRestaurantId(restaurantId string) (
 
 func (r *restaurantRepository) FindRestaurantByUserID(userId string) (*model.Restaurant, error) {
 	var restaurant model.Restaurant
-	err := r.db.Where("user_id = ?", userId).First(&restaurant).Error
+	err := r.db.Preload("TimeSlots").Preload("Images").Preload("Tables").Where("user_id = ?", userId).First(&restaurant).Error
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +63,7 @@ func (r *restaurantRepository) FindRestaurantByUserID(userId string) (*model.Res
 
 func (r *restaurantRepository) FindRestaurantByID(restaurantId string) (*model.Restaurant, error) {
 	var restaurant model.Restaurant
-	err := r.db.Preload("Images").Where("id = ?", restaurantId).First(&restaurant).Error
+	err := r.db.Preload("Reviews.User").Preload("Images").Where("id = ?", restaurantId).First(&restaurant).Error
 	if err != nil {
 		return nil, err
 	}
@@ -208,8 +227,34 @@ func (r *restaurantRepository) CreateImages(images *model.Image) error {
 	return nil
 }
 
-func (r *restaurantRepository) DeleteImage(imageId string) error {
+func (r *restaurantRepository) DeleteImage(imageId uuid.UUID) error {
 	err := r.db.Delete(&model.Image{}, imageId).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *restaurantRepository) GetDishByID(dishId string) (*model.Dish, error) {
+	var dish model.Dish
+	err := r.db.Where("id = ?", dishId).First(&dish).Error
+	if err != nil {
+		return nil, err
+	}
+	return &dish, nil
+}
+
+func (r *restaurantRepository) GetTableByID(tableId string) (*model.Table, error) {
+	var table model.Table
+	err := r.db.Where("id = ?", tableId).First(&table).Error
+	if err != nil {
+		return nil, err
+	}
+	return &table, nil
+}
+
+func (r *restaurantRepository) UpdateRestaurant(restaurant *model.Restaurant) error {
+	err := r.db.Save(restaurant).Error
 	if err != nil {
 		return err
 	}

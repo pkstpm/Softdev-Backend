@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/dto"
@@ -29,6 +30,30 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	}
 
 	timeSlot := timeSlots[(int(dto.StartTime.Weekday()))]
+	reservationYear, reservationMonth, reservationDay := dto.StartTime.Date()
+	reservationEndYear, reservationEndMonth, reservationEndDay := dto.EndTime.Date()
+
+	today := time.Now().Truncate(24 * time.Hour)
+
+	// Truncate the reservation date to midnight to ignore the time portion
+	reservationDate := dto.StartTime.Truncate(24 * time.Hour)
+
+	// Check if the reservation date is in the future
+	if !reservationDate.Equal(today) && !reservationDate.After(today) {
+		return "", errors.New("reservation date must be today or in the future")
+	}
+
+	// Ensure that the reservation is within the correct date range
+	if reservationYear != reservationEndYear || reservationMonth != reservationEndMonth || reservationDay != reservationEndDay {
+		return "", errors.New("reservation must start and end on the same day")
+	}
+
+	currentHour := time.Now().Hour()  // Get the current hour
+	startHour := dto.StartTime.Hour() // Get the hour from dto.StartTime
+
+	if startHour < currentHour {
+		return "", errors.New("the start time must be in the future")
+	}
 
 	if timeSlot.HourStart > dto.StartTime.Hour() || timeSlot.HourEnd < dto.EndTime.Hour() {
 		return "", errors.New("reservation time is not within restaurant working hours")
@@ -40,8 +65,9 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	}
 
 	reservations := table.Reservations
+	log.Printf("Reservations: %v", reservations)
 	for _, reservation := range reservations {
-		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) && reservation.Status == "Approved" {
+		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) {
 			return "", errors.New("table is already reserved")
 		}
 	}
@@ -56,12 +82,12 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 		TotalPrice:   0,
 	}
 
-	reservationId, err := r.reservationRepository.CreateReservation(reservation)
+	reservation, err = r.reservationRepository.CreateReservation(reservation)
 	if err != nil {
 		return "", err
 	}
 
-	return reservationId.String(), nil
+	return reservation.ID.String(), nil
 }
 
 func (r *reservationServiceImpl) GetReservationById(reservationId string) (*model.Reservation, error) {
@@ -151,4 +177,20 @@ func (r *reservationServiceImpl) AddDishItem(userId string, reservationId string
 	}
 
 	return nil
+}
+
+func (s *reservationServiceImpl) StartReservationUpdateRoutine() {
+	ticker := time.NewTicker(5 * time.Second)
+
+	go func() {
+		for {
+			<-ticker.C
+			err := s.reservationRepository.UpdateExpiredReservations()
+			if err != nil {
+				log.Printf("Error updating expired reservations: %v", err)
+			} else {
+				log.Println("Successfully updated expired reservations to Completed.")
+			}
+		}
+	}()
 }

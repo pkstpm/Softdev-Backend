@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"log"
+	"time"
 
-	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/database"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"gorm.io/gorm"
@@ -18,12 +18,12 @@ func NewReservationRepository(db database.Database) ReservationRepository {
 	return &reservationRepository{db: db.GetDb()}
 }
 
-func (r *reservationRepository) CreateReservation(reservation *model.Reservation) (uuid.UUID, error) {
+func (r *reservationRepository) CreateReservation(reservation *model.Reservation) (*model.Reservation, error) {
 	err := r.db.Create(reservation).Error
 	if err != nil {
-		return uuid.Nil, err
+		return reservation, err
 	}
-	return reservation.ID, nil
+	return reservation, nil
 }
 
 func (r *reservationRepository) CreateDishItem(dishItem *model.DishItem) (*model.DishItem, error) {
@@ -83,6 +83,16 @@ func (r *reservationRepository) UpdateReservation(reservation *model.Reservation
 	err := r.db.Save(reservation).Error
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (r *reservationRepository) UpdateExpiredReservations() error {
+	result := r.db.Model(&model.Reservation{}).
+		Where("end_time < ? AND status != ?", time.Now(), "Completed").
+		Update("status", "Completed")
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }

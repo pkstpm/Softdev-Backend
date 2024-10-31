@@ -3,6 +3,7 @@ package controller
 import "github.com/labstack/echo/v4"
 
 type RestaurantController interface {
+	GetMyRestaurant(c echo.Context) error
 	GetAllRestaurants(c echo.Context) error
 	FindByName(c echo.Context) error
 	FindByCategory(c echo.Context) error
@@ -18,4 +19,8 @@ type RestaurantController interface {
 	UploadRestaurantPictures(c echo.Context) error
 	DeleteRestauranPictures(c echo.Context) error
 	GetRestaurantByID(c echo.Context) error
+	GetDishByID(c echo.Context) error
+	GetTableByID(c echo.Context) error
+	UpdateRestaurant(c echo.Context) error
+	UploadTablePicture(c echo.Context) error
 }

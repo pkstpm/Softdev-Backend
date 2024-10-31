@@ -12,8 +12,9 @@ type Restaurant struct {
 	ID             uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	UserID         uuid.UUID `gorm:"type:uuid;not null;foreignkey:User;unique"`
 	RestaurantName string    `gorm:"not null"`
-	RestaurantLoca string    `gorm:"not null"`
 	Category       string    `gorm:"not null"`
+	Latitude       float64   `gorm:"not null"`
+	Longitude      float64   `gorm:"not null"`
 	Description    string
 	ImgPath        string
 	Images         []Image                        `gorm:"foreignKey:RestaurantID"`
@@ -45,6 +46,8 @@ type TimeSlot struct {
 	HourEnd      int        `gorm:"not null"`                         // Stores the ending hour as a DateTime
 	RestaurantID uuid.UUID  `gorm:"not null"`                         // Foreign key to Restaurant
 	Restaurant   Restaurant `gorm:"foreignKey:RestaurantID" json:"-"` // Relation to Restaurant model
+	Slots        string
+	IsClosed     bool
 }
 
 type Dish struct {

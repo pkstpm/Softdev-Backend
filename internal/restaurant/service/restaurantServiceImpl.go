@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/repository"
@@ -121,6 +122,7 @@ func (r *restaurantServiceImpl) CreateTimeSlot(userId string) error {
 			Weekday:      i,
 			HourStart:    9,
 			HourEnd:      21,
+			IsClosed:     false,
 		}
 		err = r.restaurantRepository.CreateTimeSlot(timeslot)
 		if err != nil {
@@ -168,6 +170,8 @@ func (r *restaurantServiceImpl) UpdateTimeSlot(userId string, dto *dto.UpdateTim
 			if timeslot.Weekday == dto.Weekday {
 				timeslot.HourStart = dto.HourStart
 				timeslot.HourEnd = dto.HourEnd
+				timeslot.IsClosed = dto.IsClosed
+				timeslot.Slots = dto.Slots
 				err = r.restaurantRepository.UpdateTimeSlot(&timeslot)
 				if err != nil {
 					return err
@@ -243,12 +247,17 @@ func (r *restaurantServiceImpl) GetRestaurantByID(restaurantId string) (*model.R
 }
 
 func (r *restaurantServiceImpl) DeletetRestaurantPicture(userId string, pictureId string) error {
-	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	_, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
 		return err
 	}
 
-	err = r.restaurantRepository.DeleteImage(restaurant.ID.String())
+	parsedID, err := uuid.Parse(pictureId)
+	if err != nil {
+		return err
+	}
+
+	err = r.restaurantRepository.DeleteImage(parsedID)
 	if err != nil {
 		return err
 	}
@@ -274,5 +283,56 @@ func (r *RestaurantService) checkCurrentTimeInTimeSlots(timeSlots []TimeSlot) er
 			return errors.New("failed the restaurant is currently open")
 		}
 	}
+	return nil
+}
+
+func (r *restaurantServiceImpl) GetDishByID(dishId string) (*model.Dish, error) {
+	dish, err := r.restaurantRepository.GetDishByID(dishId)
+	if err != nil {
+		return nil, err
+	}
+	return dish, nil
+}
+
+func (r *restaurantServiceImpl) GetTableByID(tableId string) (*model.Table, error) {
+	table, err := r.restaurantRepository.GetTableByID(tableId)
+	if err != nil {
+		return nil, err
+	}
+	return table, nil
+}
+
+func (r *restaurantServiceImpl) UpdateRestaurant(userId string, dto *dto.UpdateRestaurantDTO) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	restaurant.Description = dto.Description
+	restaurant.Category = dto.Category
+	restaurant.Latitude = dto.Latitude
+	restaurant.Longitude = dto.Longitude
+
+	err = r.restaurantRepository.UpdateRestaurant(restaurant)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *restaurantServiceImpl) UploadTablePicture(userId string, dstPath string) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	restaurant.ImgPath = dstPath
+
+	err = r.restaurantRepository.UpdateRestaurant(restaurant)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

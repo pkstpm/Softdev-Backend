@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/google/uuid"
+	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 )
 
@@ -12,6 +13,10 @@ type RestaurantRepository interface {
 	FindRestaurantByName(name string) ([]model.Restaurant, error)
 	FindRestaurantByCategory(category string) ([]model.Restaurant, error)
 	CreateRestaurant(restaurant *model.Restaurant) error
+
+	AddReservationToTable(tableId string, reservation *reservationModel.Reservation) error
+
+	UpdateRestaurant(restaurant *model.Restaurant) error
 
 	FindDishById(dishId string) (*model.Dish, error)
 	FindDishByName(name string, restauranId string) (*model.Dish, error)
@@ -32,5 +37,8 @@ type RestaurantRepository interface {
 	UpdateTimeSlot(timeSlot *model.TimeSlot) error
 
 	CreateImages(images *model.Image) error
-	DeleteImage(imageId string) error
+	DeleteImage(imageId uuid.UUID) error
+
+	GetDishByID(dishId string) (*model.Dish, error)
+	GetTableByID(tableId string) (*model.Table, error)
 }

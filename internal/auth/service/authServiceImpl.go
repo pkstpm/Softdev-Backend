@@ -66,7 +66,8 @@ func (s *authServiceImpl) RegisterRestaurant(userId uuid.UUID, dto *dto.Register
 	restaurant := &restaurantModel.Restaurant{
 		UserID:         userId,
 		RestaurantName: dto.RestaurantName,
-		RestaurantLoca: dto.RestaurantLoca,
+		Latitude:       dto.Latitude,
+		Longitude:      dto.Longitude,
 		Category:       dto.Category,
 		Description:    dto.Description,
 	}

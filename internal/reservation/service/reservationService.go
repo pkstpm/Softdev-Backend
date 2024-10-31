@@ -12,4 +12,5 @@ type ReservationService interface {
 	// GetReservationsByRestaurantId(restaurantId string) ([]model.Reservation, error)
 	CreateReservation(userId uuid.UUID, dto dto.CreateReservationDTO) (string, error)
 	AddDishItem(userId string, reservationId string, dto dto.AddDishItemDTO) error
+	StartReservationUpdateRoutine()
 }

@@ -24,6 +24,10 @@ import (
 	reviewRepository "github.com/pkstpm/Softdev-Backend/internal/review/repository"
 	reviewService "github.com/pkstpm/Softdev-Backend/internal/review/service"
 
+	notificationController "github.com/pkstpm/Softdev-Backend/internal/notification/controller"
+	notificationRepository "github.com/pkstpm/Softdev-Backend/internal/notification/repository"
+	notificationService "github.com/pkstpm/Softdev-Backend/internal/notification/service"
+
 	userController "github.com/pkstpm/Softdev-Backend/internal/users/controller"
 	userRepository "github.com/pkstpm/Softdev-Backend/internal/users/repository"
 	userService "github.com/pkstpm/Softdev-Backend/internal/users/service"
@@ -70,6 +74,7 @@ func (s *echoServer) Start() {
 	s.initReservationRoute()
 	s.initReviewRoute()
 	s.initImageRoute()
+	s.initNotificationRoute()
 
 	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
 	s.app.Logger.Fatal(s.app.Start(serverUrl))
@@ -120,10 +125,15 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.GET("/get-all", restaurantController.GetAllRestaurants)
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
 	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
+	restaurantRouters.GET("/get-dish-by-id/:dish_id", restaurantController.GetDishByID)
+	restaurantRouters.GET("/get-table-by-id/:table_id", restaurantController.GetTableByID)
 	restaurantRouters.GET("/get-time-slot/:restaurant_id", restaurantController.GetTimeSlotById)
 	restaurantRouters.GET("/get-dish/:restaurant_id", restaurantController.GetDishesByRestaurantId)
 
 	restaurantRouters.Use(middlewares.JWTMiddleware())
+	restaurantRouters.PUT("/update-restaurant", restaurantController.UpdateRestaurant)
+	restaurantRouters.PUT("/upload-table-img", restaurantController.UploadTablePicture)
+	restaurantRouters.GET("/get-my-restaurant", restaurantController.GetMyRestaurant)
 	restaurantRouters.GET("/get-dish", restaurantController.GetDishesById)
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
 	restaurantRouters.POST("/update-time-slot", restaurantController.UpdateTimeSlot)
@@ -131,7 +141,7 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.POST("/create-table", restaurantController.CreateTable)
 	restaurantRouters.PUT("/update-dish", restaurantController.UpdateDish)
 	restaurantRouters.POST("/upload-restaurant-picture", restaurantController.UploadRestaurantPictures)
-	restaurantRouters.DELETE("/delete-restaurant-picture:image_id", restaurantController.DeleteRestauranPictures)
+	restaurantRouters.DELETE("/delete-restaurant-picture/:image_id", restaurantController.DeleteRestauranPictures)
 }
 
 func (s *echoServer) initReservationRoute() {
@@ -146,6 +156,7 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters.GET("/get-reservation/:reservation_id", reservationController.GetReservationById)
 	reservationRouters.GET("/get-my-reservation", reservationController.GetReservationByUserId)
 	reservationRouters.POST("/add-dish/:reservation_id", reservationController.AddDishItem)
+	reservationService.StartReservationUpdateRoutine()
 }
 
 func (s *echoServer) initReviewRoute() {
@@ -174,4 +185,18 @@ func (s *echoServer) initImageRoute() {
 		// Serve the file for download
 		return c.File(filePath)
 	})
+}
+
+func (s *echoServer) initNotificationRoute() {
+	notificationRepository := notificationRepository.NewNotificationRepository(s.db)
+	restaurantRepository := restaurantRepository.NewRestaurantRepository(s.db)
+	notificationService := notificationService.NewNotificationService(notificationRepository, restaurantRepository)
+	notificationController := notificationController.NewNotificationController(notificationService)
+
+	notificaitonRounter := s.app.Group("/notification")
+	notificaitonRounter.Use(middlewares.JWTMiddleware())
+	notificaitonRounter.GET("/get-user-not-read-notification", notificationController.GetUserNotReadNotification)
+	notificaitonRounter.GET("/get-restaurant-not-read-notification", notificationController.GetRestaurantNotReadNotification)
+	notificaitonRounter.GET("/get-all-user-notification", notificationController.GetAllUserNotification)
+	notificaitonRounter.GET("/get-all-restaurant-notification", notificationController.GetAllRestaurantNotification)
 }
