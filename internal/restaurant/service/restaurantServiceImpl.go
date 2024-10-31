@@ -124,6 +124,7 @@ func (r *restaurantServiceImpl) CreateTimeSlot(userId string) error {
 			HourStart:    9,
 			HourEnd:      21,
 			IsClosed:     false,
+			Slots:        "09:00-21:00",
 		}
 		err = r.restaurantRepository.CreateTimeSlot(timeslot)
 		if err != nil {
