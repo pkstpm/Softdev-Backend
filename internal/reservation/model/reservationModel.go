@@ -40,3 +40,14 @@ type DishItem struct {
 	Option        string
 	Comment       string
 }
+
+func (r *Reservation) BeforeSave(tx *gorm.DB) (err error) {
+	thaiLocation, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return err
+	}
+	// Convert StartTime and EndTime to Thai time before saving
+	r.StartTime = r.StartTime.In(thaiLocation)
+	r.EndTime = r.EndTime.In(thaiLocation)
+	return nil
+}

@@ -11,7 +11,7 @@ type RestaurantService interface {
 	FindRestaurantByName(name string) ([]model.Restaurant, error)
 	FindRestaurantByCategory(category string) ([]model.Restaurant, error)
 	CreateDish(userId string, dto *dto.CreateDishDTO, imgPath string) error
-	UpdateDish(userId string, dto *dto.UpdateDishDTO) error
+	UpdateDish(userId string, dishId string, dto *dto.CreateDishDTO, imgPath string) error
 	GetTimeSlot(userId string) ([]model.TimeSlot, error)
 	GetTimeSlotByRestaurantId(restaurantId string) ([]model.TimeSlot, error)
 	CreateTimeSlot(userId string) error

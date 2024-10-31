@@ -61,13 +61,13 @@ func (r *restaurantServiceImpl) CreateDish(userId string, dto *dto.CreateDishDTO
 	return nil
 }
 
-func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO) error {
+func (r *restaurantServiceImpl) UpdateDish(userId string, dishId string, dto *dto.CreateDishDTO, imgPath string) error {
 	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
 		return err
 	}
 
-	dish, err := r.restaurantRepository.FindDishById(dto.ID)
+	dish, err := r.restaurantRepository.FindDishById(dishId)
 	if err != nil {
 		return err
 	}
@@ -93,6 +93,7 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO
 	dish.Name = dto.Name
 	dish.Description = dto.Description
 	dish.Price = dto.Price
+	dish.ImgPath = imgPath
 
 	err = r.restaurantRepository.UpdateDish(dish)
 	if err != nil {

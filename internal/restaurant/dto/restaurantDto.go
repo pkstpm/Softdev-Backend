@@ -23,7 +23,6 @@ type CreateDishDTO struct {
 	Name        string `json:"name" validate:"required,min=3,max=30"`
 	Description string `json:"description" validate:"required,min=3,max=200"`
 	Price       int    `json:"price" validate:"required"`
-	Slots       string `json:"slots"`
 }
 
 type UpdateDishDTO struct {

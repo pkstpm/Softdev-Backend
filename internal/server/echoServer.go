@@ -139,7 +139,7 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.POST("/update-time-slot", restaurantController.UpdateTimeSlot)
 	restaurantRouters.POST("/create-dish", restaurantController.CreateDish)
 	restaurantRouters.POST("/create-table", restaurantController.CreateTable)
-	restaurantRouters.PUT("/update-dish", restaurantController.UpdateDish)
+	restaurantRouters.PUT("/update-dish/:dish_id", restaurantController.UpdateDish)
 	restaurantRouters.POST("/upload-restaurant-picture", restaurantController.UploadRestaurantPictures)
 	restaurantRouters.DELETE("/delete-restaurant-picture/:image_id", restaurantController.DeleteRestauranPictures)
 }
