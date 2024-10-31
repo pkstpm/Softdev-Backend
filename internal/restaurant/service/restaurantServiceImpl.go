@@ -83,10 +83,10 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO
 
 	timeSlots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurant.ID.String())
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := r.checkCurrentTimeInTimeSlots(timeSlots); err != nil {
+	if err := checkCurrentTimeInTimeSlots(timeSlots); err != nil {
 		return err
 	}
 
@@ -273,7 +273,7 @@ func (r *restaurantServiceImpl) GetRestaurantByUserId(userId string) (*model.Res
 	return restaurant, nil
 }
 
-func (r *RestaurantService) checkCurrentTimeInTimeSlots(timeSlots []TimeSlot) error {
+func checkCurrentTimeInTimeSlots(timeSlots []model.TimeSlot) error {
 	currentTime := time.Now()
 	currentWeekday := int(currentTime.Weekday())
 	currentHour := currentTime.Hour()

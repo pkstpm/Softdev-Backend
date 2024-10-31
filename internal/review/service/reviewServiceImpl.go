@@ -36,7 +36,7 @@ func (s *reviewServiceImpl) CreateReview(userId string, reservationId string, re
 		return errors.New("user does not own this reservation")
 	}
 
-	if reservation.Status != StatusType.Completed {
+	if reservation.Status != "Completed" {
 		return errors.New("user does not completed this reservation")
 	}
 
