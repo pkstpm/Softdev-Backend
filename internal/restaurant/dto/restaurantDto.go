@@ -8,7 +8,7 @@ type UpdateRestaurantDTO struct {
 }
 
 type UpdateTimeSlotDTO struct {
-	Weekday   int    `json:"weekday" validate:"required,gte=0,lte=6"`
+	Weekday   int    `json:"weekday" validate:"gte=0,lte=6"`
 	HourStart int    `json:"hour_start" validate:"required,gte=0,lte=23"`
 	HourEnd   int    `json:"hour_end" validate:"required,gte=0,lte=23,gtfield=HourStart"`
 	Slots     string `json:"slots"`

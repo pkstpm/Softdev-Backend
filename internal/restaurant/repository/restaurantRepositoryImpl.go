@@ -93,7 +93,7 @@ func (r *restaurantRepository) FindRestaurantByName(name string) ([]model.Restau
 	searchPattern := "%" + name + "%" // This will match any restaurant name containing the search term
 
 	// Use LIKE for partial matching
-	if err := r.db.Preload("Images").Where("restaurant_name ILIKE ?", searchPattern).Find(&restaurants).Error; err != nil {
+	if err := r.db.Preload("Reviews").Preload("Images").Where("restaurant_name ILIKE ?", searchPattern).Find(&restaurants).Error; err != nil {
 		return nil, err
 	}
 	return restaurants, nil
@@ -104,7 +104,7 @@ func (r *restaurantRepository) FindRestaurantByCategory(category string) ([]mode
 	var restaurants []model.Restaurant // This will match any category containing the search term
 
 	// Use LIKE for partial matching
-	if err := r.db.Preload("Images").Where("category = ?", category).Find(&restaurants).Error; err != nil {
+	if err := r.db.Preload("Reviews").Preload("Images").Where("category = ?", category).Find(&restaurants).Error; err != nil {
 		return nil, err
 	}
 	return restaurants, nil
