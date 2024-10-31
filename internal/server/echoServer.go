@@ -132,6 +132,7 @@ func (s *echoServer) initRestaurantRoute() {
 
 	restaurantRouters.Use(middlewares.JWTMiddleware())
 	restaurantRouters.PUT("/update-restaurant", restaurantController.UpdateRestaurant)
+	restaurantRouters.PUT("/upload-table-img", restaurantController.UploadTablePicture)
 	restaurantRouters.GET("/get-my-restaurant", restaurantController.GetMyRestaurant)
 	restaurantRouters.GET("/get-dish", restaurantController.GetDishesById)
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
@@ -140,7 +141,7 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.POST("/create-table", restaurantController.CreateTable)
 	restaurantRouters.PUT("/update-dish", restaurantController.UpdateDish)
 	restaurantRouters.POST("/upload-restaurant-picture", restaurantController.UploadRestaurantPictures)
-	restaurantRouters.DELETE("/delete-restaurant-picture:image_id", restaurantController.DeleteRestauranPictures)
+	restaurantRouters.DELETE("/delete-restaurant-picture/:image_id", restaurantController.DeleteRestauranPictures)
 }
 
 func (s *echoServer) initReservationRoute() {

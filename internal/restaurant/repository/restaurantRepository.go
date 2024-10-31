@@ -37,7 +37,7 @@ type RestaurantRepository interface {
 	UpdateTimeSlot(timeSlot *model.TimeSlot) error
 
 	CreateImages(images *model.Image) error
-	DeleteImage(imageId string) error
+	DeleteImage(imageId uuid.UUID) error
 
 	GetDishByID(dishId string) (*model.Dish, error)
 	GetTableByID(tableId string) (*model.Table, error)

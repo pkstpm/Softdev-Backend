@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/dto"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/repository"
@@ -237,12 +238,17 @@ func (r *restaurantServiceImpl) GetRestaurantByID(restaurantId string) (*model.R
 }
 
 func (r *restaurantServiceImpl) DeletetRestaurantPicture(userId string, pictureId string) error {
-	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	_, err := r.restaurantRepository.FindRestaurantByUserID(userId)
 	if err != nil {
 		return err
 	}
 
-	err = r.restaurantRepository.DeleteImage(restaurant.ID.String())
+	parsedID, err := uuid.Parse(pictureId)
+	if err != nil {
+		return err
+	}
+
+	err = r.restaurantRepository.DeleteImage(parsedID)
 	if err != nil {
 		return err
 	}
@@ -284,6 +290,22 @@ func (r *restaurantServiceImpl) UpdateRestaurant(userId string, dto *dto.UpdateR
 	restaurant.Category = dto.Category
 	restaurant.Latitude = dto.Latitude
 	restaurant.Longitude = dto.Longitude
+
+	err = r.restaurantRepository.UpdateRestaurant(restaurant)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *restaurantServiceImpl) UploadTablePicture(userId string, dstPath string) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	restaurant.ImgPath = dstPath
 
 	err = r.restaurantRepository.UpdateRestaurant(restaurant)
 	if err != nil {

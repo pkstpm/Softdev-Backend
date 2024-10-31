@@ -25,4 +25,5 @@ type RestaurantService interface {
 	GetDishByID(dishId string) (*model.Dish, error)
 	GetTableByID(tableId string) (*model.Table, error)
 	UpdateRestaurant(userId string, dto *dto.UpdateRestaurantDTO) error
+	UploadTablePicture(userId string, dstPath string) error
 }

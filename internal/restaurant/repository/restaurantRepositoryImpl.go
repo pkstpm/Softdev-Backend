@@ -227,7 +227,7 @@ func (r *restaurantRepository) CreateImages(images *model.Image) error {
 	return nil
 }
 
-func (r *restaurantRepository) DeleteImage(imageId string) error {
+func (r *restaurantRepository) DeleteImage(imageId uuid.UUID) error {
 	err := r.db.Delete(&model.Image{}, imageId).Error
 	if err != nil {
 		return err

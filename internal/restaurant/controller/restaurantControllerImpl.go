@@ -383,3 +383,69 @@ func (h *restaurantController) UpdateRestaurant(c echo.Context) error {
 
 	return utils.SendSuccess(c, "Restaurant updated successfully", nil)
 }
+
+func (h *restaurantController) UploadTablePicture(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+
+	// Retrieve the multipart form
+	form, err := c.MultipartForm()
+	if err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Failed to retrieve file", err)
+	}
+
+	// Retrieve the single file from the form
+	files := form.File["images"]
+	if len(files) == 0 {
+		return utils.SendError(c, http.StatusBadRequest, "No file uploaded", nil)
+	}
+
+	// Since we only want to upload one picture, we take the first file
+	file := files[0]
+
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to open file", err)
+	}
+	defer src.Close()
+
+	// Check the MIME type of the file
+	mimeType := file.Header.Get("Content-Type")
+	if !utils.IsAllowedMimeType(mimeType) {
+		return utils.SendError(c, http.StatusBadRequest, "Invalid file type. Only PNG, JPEG, or JPG are allowed.", nil)
+	}
+
+	// Create a unique file name using UUID
+	uniqueID := uuid.New().String()
+	fileExtension := filepath.Ext(file.Filename)
+	newFileName := fmt.Sprintf("%s%s", uniqueID, fileExtension)
+
+	// Define the destination path
+	dstPath := filepath.Join("uploads", newFileName)
+
+	// Create destination directory if it doesn't exist
+	if err := os.MkdirAll("uploads", os.ModePerm); err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to create upload directory", err)
+	}
+
+	// Create the destination file
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to create destination file", err)
+	}
+	defer dst.Close()
+
+	// Copy the file content to the destination
+	if _, err = io.Copy(dst, src); err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to upload file", err)
+	}
+
+	// Call your service to handle the uploaded file if needed
+	err = h.restaurantService.UploadTablePicture(userId, dstPath)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to upload restaurant picture", err)
+	}
+
+	// Return success response with the uploaded file path
+	return utils.SendSuccess(c, "Restaurant picture uploaded successfully", dstPath)
+}
