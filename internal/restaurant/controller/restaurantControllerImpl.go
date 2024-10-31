@@ -121,6 +121,7 @@ func (h *restaurantController) CreateDish(c echo.Context) error {
 func (h *restaurantController) UpdateDish(c echo.Context) error {
 	userId := c.Get("user_id").(string)
 	dishId := c.Param("dish_id")
+	dstPath := ""
 	var createDishDTO dto.CreateDishDTO
 
 	// Manually get form values for the fields
@@ -145,39 +146,37 @@ func (h *restaurantController) UpdateDish(c echo.Context) error {
 	}
 
 	files := form.File["image"]
-	if len(files) == 0 {
-		return utils.SendError(c, http.StatusBadRequest, "No image uploaded", nil)
-	}
+	if len(files) != 0 {
+		file := files[0]
+		src, err := file.Open()
+		if err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to open file", err)
+		}
+		defer src.Close()
 
-	file := files[0]
-	src, err := file.Open()
-	if err != nil {
-		return utils.SendError(c, http.StatusInternalServerError, "Failed to open file", err)
-	}
-	defer src.Close()
+		mimeType := file.Header.Get("Content-Type")
+		if !utils.IsAllowedMimeType(mimeType) {
+			return utils.SendError(c, http.StatusBadRequest, "Invalid file type. Only PNG, JPEG, or JPG are allowed.", nil)
+		}
 
-	mimeType := file.Header.Get("Content-Type")
-	if !utils.IsAllowedMimeType(mimeType) {
-		return utils.SendError(c, http.StatusBadRequest, "Invalid file type. Only PNG, JPEG, or JPG are allowed.", nil)
-	}
+		uniqueID := uuid.New().String()
+		fileExtension := filepath.Ext(file.Filename)
+		newFileName := fmt.Sprintf("%s%s", uniqueID, fileExtension)
+		dstPath = filepath.Join("uploads", newFileName)
 
-	uniqueID := uuid.New().String()
-	fileExtension := filepath.Ext(file.Filename)
-	newFileName := fmt.Sprintf("%s%s", uniqueID, fileExtension)
-	dstPath := filepath.Join("uploads", newFileName)
+		if err := os.MkdirAll("uploads", os.ModePerm); err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to create upload directory", err)
+		}
 
-	if err := os.MkdirAll("uploads", os.ModePerm); err != nil {
-		return utils.SendError(c, http.StatusInternalServerError, "Failed to create upload directory", err)
-	}
+		dst, err := os.Create(dstPath)
+		if err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to create destination file", err)
+		}
+		defer dst.Close()
 
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return utils.SendError(c, http.StatusInternalServerError, "Failed to create destination file", err)
-	}
-	defer dst.Close()
-
-	if _, err = io.Copy(dst, src); err != nil {
-		return utils.SendError(c, http.StatusInternalServerError, "Failed to upload file", err)
+		if _, err = io.Copy(dst, src); err != nil {
+			return utils.SendError(c, http.StatusInternalServerError, "Failed to upload file", err)
+		}
 	}
 
 	err = h.restaurantService.UpdateDish(userId, dishId, &createDishDTO, dstPath)

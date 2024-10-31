@@ -93,8 +93,9 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dishId string, dto *dt
 	dish.Name = dto.Name
 	dish.Description = dto.Description
 	dish.Price = dto.Price
-	dish.ImgPath = imgPath
-
+	if imgPath != "" {
+		dish.ImgPath = imgPath
+	}
 	err = r.restaurantRepository.UpdateDish(dish)
 	if err != nil {
 		return err
@@ -282,7 +283,7 @@ func checkCurrentTimeInTimeSlots(timeSlots []model.TimeSlot) error {
 	currentHour := currentTime.Hour()
 
 	for _, slot := range timeSlots {
-		if slot.Weekday == currentWeekday && currentHour >= slot.HourStart && currentHour < slot.HourEnd {
+		if slot.Weekday == currentWeekday && currentHour >= slot.HourStart-7 && currentHour < slot.HourEnd-7 {
 			return errors.New("failed the restaurant is currently open")
 		}
 	}
