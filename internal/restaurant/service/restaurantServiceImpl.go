@@ -273,3 +273,22 @@ func (r *restaurantServiceImpl) GetTableByID(tableId string) (*model.Table, erro
 	}
 	return table, nil
 }
+
+func (r *restaurantServiceImpl) UpdateRestaurant(userId string, dto *dto.UpdateRestaurantDTO) error {
+	restaurant, err := r.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil {
+		return err
+	}
+
+	restaurant.Description = dto.Description
+	restaurant.Category = dto.Category
+	restaurant.Latitude = dto.Latitude
+	restaurant.Longitude = dto.Longitude
+
+	err = r.restaurantRepository.UpdateRestaurant(restaurant)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

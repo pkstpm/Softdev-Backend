@@ -16,6 +16,8 @@ type RestaurantRepository interface {
 
 	AddReservationToTable(tableId string, reservation *reservationModel.Reservation) error
 
+	UpdateRestaurant(restaurant *model.Restaurant) error
+
 	FindDishById(dishId string) (*model.Dish, error)
 	FindDishByName(name string, restauranId string) (*model.Dish, error)
 	GetAllDishesByRestaurantId(restaurantId string) ([]model.Dish, error)

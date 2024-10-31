@@ -21,4 +21,5 @@ type RestaurantController interface {
 	GetRestaurantByID(c echo.Context) error
 	GetDishByID(c echo.Context) error
 	GetTableByID(c echo.Context) error
+	UpdateRestaurant(c echo.Context) error
 }

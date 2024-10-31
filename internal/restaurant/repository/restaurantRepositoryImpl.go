@@ -54,7 +54,7 @@ func (r *restaurantRepository) GetAllDishesByRestaurantId(restaurantId string) (
 
 func (r *restaurantRepository) FindRestaurantByUserID(userId string) (*model.Restaurant, error) {
 	var restaurant model.Restaurant
-	err := r.db.Preload("TimeSlots").Preload("Tables").Where("user_id = ?", userId).First(&restaurant).Error
+	err := r.db.Preload("TimeSlots").Preload("Images").Preload("Tables").Where("user_id = ?", userId).First(&restaurant).Error
 	if err != nil {
 		return nil, err
 	}
@@ -251,4 +251,12 @@ func (r *restaurantRepository) GetTableByID(tableId string) (*model.Table, error
 		return nil, err
 	}
 	return &table, nil
+}
+
+func (r *restaurantRepository) UpdateRestaurant(restaurant *model.Restaurant) error {
+	err := r.db.Save(restaurant).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

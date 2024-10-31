@@ -24,4 +24,5 @@ type RestaurantService interface {
 	GetRestaurantByID(restaurantId string) (*model.Restaurant, error)
 	GetDishByID(dishId string) (*model.Dish, error)
 	GetTableByID(tableId string) (*model.Table, error)
+	UpdateRestaurant(userId string, dto *dto.UpdateRestaurantDTO) error
 }

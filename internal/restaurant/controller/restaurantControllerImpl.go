@@ -364,3 +364,22 @@ func (h *restaurantController) GetTableByID(c echo.Context) error {
 
 	return utils.SendSuccess(c, "Get Table By ID Success", table)
 }
+
+func (h *restaurantController) UpdateRestaurant(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+	var updateRestaurantDTO dto.UpdateRestaurantDTO
+	if err := c.Bind(&updateRestaurantDTO); err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Invalid input", nil)
+	}
+
+	if err := validate.Struct(&updateRestaurantDTO); err != nil {
+		return utils.SendError(c, http.StatusBadRequest, "Validation failed", err.Error())
+	}
+
+	err := h.restaurantService.UpdateRestaurant(userId, &updateRestaurantDTO)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Update restaurant failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Restaurant updated successfully", nil)
+}

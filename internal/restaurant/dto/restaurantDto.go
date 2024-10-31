@@ -1,5 +1,12 @@
 package dto
 
+type UpdateRestaurantDTO struct {
+	Description string  `json:"description" validate:"required,min=3,max=200"`
+	Category    string  `json:"category" validate:"required,min=3,max=30"`
+	Latitude    float64 `json:"latitude" validate:"required"`
+	Longitude   float64 `json:"longitude" validate:"required"`
+}
+
 type UpdateTimeSlotDTO struct {
 	Weekday   int    `json:"weekday" validate:"required,gte=0,lte=6"`
 	HourStart int    `json:"hour_start" validate:"required,gte=0,lte=23"`

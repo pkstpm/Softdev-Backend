@@ -33,9 +33,26 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	reservationYear, reservationMonth, reservationDay := dto.StartTime.Date()
 	reservationEndYear, reservationEndMonth, reservationEndDay := dto.EndTime.Date()
 
+	today := time.Now().Truncate(24 * time.Hour)
+
+	// Truncate the reservation date to midnight to ignore the time portion
+	reservationDate := dto.StartTime.Truncate(24 * time.Hour)
+
+	// Check if the reservation date is in the future
+	if !reservationDate.Equal(today) && !reservationDate.After(today) {
+		return "", errors.New("reservation date must be today or in the future")
+	}
+
 	// Ensure that the reservation is within the correct date range
 	if reservationYear != reservationEndYear || reservationMonth != reservationEndMonth || reservationDay != reservationEndDay {
 		return "", errors.New("reservation must start and end on the same day")
+	}
+
+	currentHour := time.Now().Hour()  // Get the current hour
+	startHour := dto.StartTime.Hour() // Get the hour from dto.StartTime
+
+	if startHour < currentHour {
+		return "", errors.New("the start time must be in the future")
 	}
 
 	if timeSlot.HourStart > dto.StartTime.Hour() || timeSlot.HourEnd < dto.EndTime.Hour() {
