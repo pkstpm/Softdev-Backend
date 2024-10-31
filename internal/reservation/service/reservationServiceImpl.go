@@ -40,8 +40,9 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 	}
 
 	reservations := table.Reservations
+	log.Printf("Reservations: %v", reservations)
 	for _, reservation := range reservations {
-		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) && reservation.Status == "Approved" {
+		if reservation.StartTime.Before(dto.EndTime) && reservation.EndTime.After(dto.StartTime) {
 			return "", errors.New("table is already reserved")
 		}
 	}
@@ -56,12 +57,12 @@ func (r *reservationServiceImpl) CreateReservation(userId uuid.UUID, dto dto.Cre
 		TotalPrice:   0,
 	}
 
-	reservationId, err := r.reservationRepository.CreateReservation(reservation)
+	reservation, err = r.reservationRepository.CreateReservation(reservation)
 	if err != nil {
 		return "", err
 	}
 
-	return reservationId.String(), nil
+	return reservation.ID.String(), nil
 }
 
 func (r *reservationServiceImpl) GetReservationById(reservationId string) (*model.Reservation, error) {

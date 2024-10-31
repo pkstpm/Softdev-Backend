@@ -22,10 +22,11 @@ type LoginDTO struct {
 }
 
 type RegisterRestaurantDTO struct {
-	RestaurantName string `json:"restaurant_name" validate:"required,username,min=3,max=30"`
-	RestaurantLoca string `json:"restaurant_location" validate:"required,username,min=3,max=30"`
-	Category       string `json:"category" validate:"required,min=1,max=30"`
-	Description    string `json:"description" validate:"required,min=3,max=30"`
+	RestaurantName string  `json:"restaurant_name" validate:"required,username,min=3,max=30"`
+	Latitude       float64 `json:"latitude" validate:"required"`
+	Longitude      float64 `json:"longitude" validate:"required"`
+	Category       string  `json:"category" validate:"required,min=1,max=30"`
+	Description    string  `json:"description" validate:"required,min=3,max=30"`
 }
 
 type UserResponse struct {

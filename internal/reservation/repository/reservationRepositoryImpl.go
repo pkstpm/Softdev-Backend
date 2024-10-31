@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 
-	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/database"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"gorm.io/gorm"
@@ -18,12 +17,12 @@ func NewReservationRepository(db database.Database) ReservationRepository {
 	return &reservationRepository{db: db.GetDb()}
 }
 
-func (r *reservationRepository) CreateReservation(reservation *model.Reservation) (uuid.UUID, error) {
+func (r *reservationRepository) CreateReservation(reservation *model.Reservation) (*model.Reservation, error) {
 	err := r.db.Create(reservation).Error
 	if err != nil {
-		return uuid.Nil, err
+		return reservation, err
 	}
-	return reservation.ID, nil
+	return reservation, nil
 }
 
 func (r *reservationRepository) CreateDishItem(dishItem *model.DishItem) (*model.DishItem, error) {

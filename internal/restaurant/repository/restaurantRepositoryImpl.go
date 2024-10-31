@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/database"
+	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 	"gorm.io/gorm"
 )
@@ -22,6 +23,24 @@ func (r *restaurantRepository) FindDishByName(name string, restaurantId string) 
 		return nil, err
 	}
 	return &dish, nil
+}
+
+func (r *restaurantRepository) AddReservationToTable(tableId string, reservation *reservationModel.Reservation) error {
+	// Retrieve the existing table
+	var table model.Table
+	if err := r.db.Preload("Reservations").First(&table, "id = ?", tableId).Error; err != nil {
+		return err
+	}
+
+	// Append the new reservation
+	table.Reservations = append(table.Reservations, *reservation)
+
+	// Save the table with the new reservation
+	if err := r.db.Save(&table).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *restaurantRepository) GetAllDishesByRestaurantId(restaurantId string) ([]model.Dish, error) {

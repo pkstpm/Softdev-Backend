@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/google/uuid"
+	reservationModel "github.com/pkstpm/Softdev-Backend/internal/reservation/model"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/model"
 )
 
@@ -12,6 +13,8 @@ type RestaurantRepository interface {
 	FindRestaurantByName(name string) ([]model.Restaurant, error)
 	FindRestaurantByCategory(category string) ([]model.Restaurant, error)
 	CreateRestaurant(restaurant *model.Restaurant) error
+
+	AddReservationToTable(tableId string, reservation *reservationModel.Reservation) error
 
 	FindDishById(dishId string) (*model.Dish, error)
 	FindDishByName(name string, restauranId string) (*model.Dish, error)

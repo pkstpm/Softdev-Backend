@@ -12,8 +12,9 @@ type Restaurant struct {
 	ID             uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	UserID         uuid.UUID `gorm:"type:uuid;not null;foreignkey:User;unique"`
 	RestaurantName string    `gorm:"not null"`
-	RestaurantLoca string    `gorm:"not null"`
 	Category       string    `gorm:"not null"`
+	Latitude       float64   `gorm:"not null"`
+	Longitude      float64   `gorm:"not null"`
 	Description    string
 	ImgPath        string
 	Images         []Image                        `gorm:"foreignKey:RestaurantID"`

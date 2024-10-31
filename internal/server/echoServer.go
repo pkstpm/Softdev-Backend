@@ -24,6 +24,10 @@ import (
 	reviewRepository "github.com/pkstpm/Softdev-Backend/internal/review/repository"
 	reviewService "github.com/pkstpm/Softdev-Backend/internal/review/service"
 
+	notificationController "github.com/pkstpm/Softdev-Backend/internal/notification/controller"
+	notificationRepository "github.com/pkstpm/Softdev-Backend/internal/notification/repository"
+	notificationService "github.com/pkstpm/Softdev-Backend/internal/notification/service"
+
 	userController "github.com/pkstpm/Softdev-Backend/internal/users/controller"
 	userRepository "github.com/pkstpm/Softdev-Backend/internal/users/repository"
 	userService "github.com/pkstpm/Softdev-Backend/internal/users/service"
@@ -70,6 +74,7 @@ func (s *echoServer) Start() {
 	s.initReservationRoute()
 	s.initReviewRoute()
 	s.initImageRoute()
+	s.initNotificationRoute()
 
 	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
 	s.app.Logger.Fatal(s.app.Start(serverUrl))
@@ -175,4 +180,18 @@ func (s *echoServer) initImageRoute() {
 		// Serve the file for download
 		return c.File(filePath)
 	})
+}
+
+func (s *echoServer) initNotificationRoute() {
+	notificationRepository := notificationRepository.NewNotificationRepository(s.db)
+	restaurantRepository := restaurantRepository.NewRestaurantRepository(s.db)
+	notificationService := notificationService.NewNotificationService(notificationRepository, restaurantRepository)
+	notificationController := notificationController.NewNotificationController(notificationService)
+
+	notificaitonRounter := s.app.Group("/notification")
+	notificaitonRounter.Use(middlewares.JWTMiddleware())
+	notificaitonRounter.GET("/get-user-not-read-notification", notificationController.GetUserNotReadNotification)
+	notificaitonRounter.GET("/get-restaurant-not-read-notification", notificationController.GetRestaurantNotReadNotification)
+	notificaitonRounter.GET("/get-all-user-notification", notificationController.GetAllUserNotification)
+	notificaitonRounter.GET("/get-all-restaurant-notification", notificationController.GetAllRestaurantNotification)
 }
