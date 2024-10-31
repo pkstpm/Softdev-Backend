@@ -157,6 +157,7 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters.GET("/get-reservation/:reservation_id", reservationController.GetReservationById)
 	reservationRouters.GET("/get-my-reservation", reservationController.GetReservationByUserId)
 	reservationRouters.POST("/add-dish/:reservation_id", reservationController.AddDishItem)
+	reservationRouters.GET("/get-restaurant-reservation", reservationController.GetReservationByRestaurantId)
 	reservationService.StartReservationUpdateRoutine()
 }
 

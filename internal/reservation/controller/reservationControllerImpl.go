@@ -94,3 +94,14 @@ func (h *reservationController) AddDishItem(c echo.Context) error {
 	return utils.SendSuccess(c, "Dish item added successfully", nil)
 
 }
+
+func (h *reservationController) GetReservationByRestaurantId(c echo.Context) error {
+	userId := c.Get("user_id").(string)
+
+	reservations, err := h.reservationService.GetReservationsByRestaurantId(userId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Get reservations by restaurant ID failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Reservations retrieved successfully", reservations)
+}

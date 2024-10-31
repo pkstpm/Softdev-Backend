@@ -198,6 +198,18 @@ func (r *reservationServiceImpl) AddDishItem(userId string, reservationId string
 	return nil
 }
 
+func (s *reservationServiceImpl) GetReservationsByRestaurantId(userId string) ([]model.Reservation, error) {
+	restaurant, err := s.restaurantRepository.FindRestaurantByUserID(userId)
+	if err != nil || restaurant == nil {
+		return nil, err
+	}
+	reservations, err := s.reservationRepository.GetReservationByRestaurantId(restaurant.ID.String())
+	if err != nil {
+		return nil, err
+	}
+	return reservations, nil
+}
+
 func (s *reservationServiceImpl) StartReservationUpdateRoutine() {
 	ticker := time.NewTicker(5 * time.Second)
 
