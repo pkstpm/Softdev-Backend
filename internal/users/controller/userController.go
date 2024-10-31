@@ -9,4 +9,5 @@ type UserController interface {
 	UploadUserProfilePicture(c echo.Context) error
 	AddFavouriteRestaurant(c echo.Context) error
 	RemoveFavouriteRestaurant(c echo.Context) error
+	GetUserById(c echo.Context) error
 }

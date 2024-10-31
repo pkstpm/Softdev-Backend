@@ -104,6 +104,7 @@ func (s *echoServer) initUserRoute() {
 
 	userRouters := s.app.Group("/users")
 	userRouters.Use(middlewares.JWTMiddleware())
+	userRouters.GET("/get-user/:user_id", userController.GetUserById)
 	userRouters.GET("/profile", userController.ViewProfile)
 	userRouters.POST("/upload-profile-picture", userController.UploadUserProfilePicture)
 	userRouters.PUT("/edit-profile", userController.UpdateProfile)

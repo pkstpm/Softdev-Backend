@@ -154,3 +154,14 @@ func (h *userController) RemoveFavouriteRestaurant(c echo.Context) error {
 
 	return utils.SendSuccess(c, "Favourite restaurant removed successfully", nil)
 }
+
+func (h *userController) GetUserById(c echo.Context) error {
+	userId := c.Param("user_id")
+
+	user, err := h.userService.GetUser(userId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed to get favourite restaurants", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Favourite restaurants retrieved successfully", user)
+}
