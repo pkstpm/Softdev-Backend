@@ -75,10 +75,11 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dishId string, dto *dt
 	if restaurant.ID != dish.RestaurantID {
 		return errors.New("dish does not belong to restaurant")
 	}
-
-	_, err = r.restaurantRepository.FindDishByName(dto.Name, restaurant.ID.String())
-	if err == nil {
-		return errors.New("dish name already exists")
+	if dish.Name != dto.Name {
+		_, err = r.restaurantRepository.FindDishByName(dto.Name, restaurant.ID.String())
+		if err == nil {
+			return errors.New("dish name already exists")
+		}
 	}
 
 	timeSlots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurant.ID.String())
