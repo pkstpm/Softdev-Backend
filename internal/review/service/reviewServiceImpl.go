@@ -36,6 +36,10 @@ func (s *reviewServiceImpl) CreateReview(userId string, reservationId string, re
 		return errors.New("user does not own this reservation")
 	}
 
+	if reservation.Status != StatusType.Completed {
+		return errors.New("user does not completed this reservation")
+	}
+
 	existReview, _ := s.reviewRepository.FindReviewByUserIdAndReservationId(userId, reservationId)
 	if existReview != nil {
 		return errors.New("review already exists")

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/pkstpm/Softdev-Backend/internal/restaurant/dto"
@@ -80,6 +81,15 @@ func (r *restaurantServiceImpl) UpdateDish(userId string, dto *dto.UpdateDishDTO
 		return errors.New("dish name already exists")
 	}
 
+	timeSlots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurant.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.checkCurrentTimeInTimeSlots(timeSlots); err != nil {
+		return err
+	}
+
 	dish.Name = dto.Name
 	dish.Description = dto.Description
 	dish.Price = dto.Price
@@ -151,7 +161,6 @@ func (r *restaurantServiceImpl) UpdateTimeSlot(userId string, dto *dto.UpdateTim
 	}
 
 	timeslots, err := r.restaurantRepository.GetTimeSlotsByRestaurantId(restaurant.ID.String())
-
 	if err != nil {
 		return err
 	}
@@ -262,6 +271,19 @@ func (r *restaurantServiceImpl) GetRestaurantByUserId(userId string) (*model.Res
 		return nil, err
 	}
 	return restaurant, nil
+}
+
+func (r *RestaurantService) checkCurrentTimeInTimeSlots(timeSlots []TimeSlot) error {
+	currentTime := time.Now()
+	currentWeekday := int(currentTime.Weekday())
+	currentHour := currentTime.Hour()
+
+	for _, slot := range timeSlots {
+		if slot.Weekday == currentWeekday && currentHour >= slot.HourStart && currentHour < slot.HourEnd {
+			return errors.New("failed the restaurant is currently open")
+		}
+	}
+	return nil
 }
 
 func (r *restaurantServiceImpl) GetDishByID(dishId string) (*model.Dish, error) {
