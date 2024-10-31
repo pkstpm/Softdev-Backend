@@ -125,6 +125,8 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.GET("/get-all", restaurantController.GetAllRestaurants)
 	restaurantRouters.GET("/get-table/:restaurant_id", restaurantController.GetTable)
 	restaurantRouters.GET("/:restaurant_id", restaurantController.GetRestaurantByID)
+	restaurantRouters.GET("/get-dish-by-id/:dish_id", restaurantController.GetDishByID)
+	restaurantRouters.GET("/get-table-by-id/:table_id", restaurantController.GetTableByID)
 	restaurantRouters.GET("/get-time-slot/:restaurant_id", restaurantController.GetTimeSlotById)
 	restaurantRouters.GET("/get-dish/:restaurant_id", restaurantController.GetDishesByRestaurantId)
 
@@ -152,6 +154,7 @@ func (s *echoServer) initReservationRoute() {
 	reservationRouters.GET("/get-reservation/:reservation_id", reservationController.GetReservationById)
 	reservationRouters.GET("/get-my-reservation", reservationController.GetReservationByUserId)
 	reservationRouters.POST("/add-dish/:reservation_id", reservationController.AddDishItem)
+	reservationService.StartReservationUpdateRoutine()
 }
 
 func (s *echoServer) initReviewRoute() {

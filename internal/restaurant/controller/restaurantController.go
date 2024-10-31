@@ -19,4 +19,6 @@ type RestaurantController interface {
 	UploadRestaurantPictures(c echo.Context) error
 	DeleteRestauranPictures(c echo.Context) error
 	GetRestaurantByID(c echo.Context) error
+	GetDishByID(c echo.Context) error
+	GetTableByID(c echo.Context) error
 }

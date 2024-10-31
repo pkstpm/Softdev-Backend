@@ -234,3 +234,21 @@ func (r *restaurantRepository) DeleteImage(imageId string) error {
 	}
 	return nil
 }
+
+func (r *restaurantRepository) GetDishByID(dishId string) (*model.Dish, error) {
+	var dish model.Dish
+	err := r.db.Where("id = ?", dishId).First(&dish).Error
+	if err != nil {
+		return nil, err
+	}
+	return &dish, nil
+}
+
+func (r *restaurantRepository) GetTableByID(tableId string) (*model.Table, error) {
+	var table model.Table
+	err := r.db.Where("id = ?", tableId).First(&table).Error
+	if err != nil {
+		return nil, err
+	}
+	return &table, nil
+}

@@ -344,3 +344,23 @@ func (h *restaurantController) GetMyRestaurant(c echo.Context) error {
 
 	return utils.SendSuccess(c, "Get Restaurant By User Id Success", restaurant)
 }
+
+func (h *restaurantController) GetDishByID(c echo.Context) error {
+	dishId := c.Param("dish_id")
+	dish, err := h.restaurantService.GetDishByID(dishId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Get Dish By ID Success", dish)
+}
+
+func (h *restaurantController) GetTableByID(c echo.Context) error {
+	tableId := c.Param("table_id")
+	table, err := h.restaurantService.GetTableByID(tableId)
+	if err != nil {
+		return utils.SendError(c, http.StatusInternalServerError, "Failed", err.Error())
+	}
+
+	return utils.SendSuccess(c, "Get Table By ID Success", table)
+}

@@ -22,4 +22,6 @@ type RestaurantService interface {
 	UploadRestaurantPictures(userId string, uploadedFiles []string) error
 	DeletetRestaurantPicture(userId string, pictureId string) error
 	GetRestaurantByID(restaurantId string) (*model.Restaurant, error)
+	GetDishByID(dishId string) (*model.Dish, error)
+	GetTableByID(tableId string) (*model.Table, error)
 }

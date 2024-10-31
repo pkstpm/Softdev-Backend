@@ -257,3 +257,19 @@ func (r *restaurantServiceImpl) GetRestaurantByUserId(userId string) (*model.Res
 	}
 	return restaurant, nil
 }
+
+func (r *restaurantServiceImpl) GetDishByID(dishId string) (*model.Dish, error) {
+	dish, err := r.restaurantRepository.GetDishByID(dishId)
+	if err != nil {
+		return nil, err
+	}
+	return dish, nil
+}
+
+func (r *restaurantServiceImpl) GetTableByID(tableId string) (*model.Table, error) {
+	table, err := r.restaurantRepository.GetTableByID(tableId)
+	if err != nil {
+		return nil, err
+	}
+	return table, nil
+}

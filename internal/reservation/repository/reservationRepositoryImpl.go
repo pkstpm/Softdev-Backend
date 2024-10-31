@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/pkstpm/Softdev-Backend/internal/database"
 	"github.com/pkstpm/Softdev-Backend/internal/reservation/model"
@@ -82,6 +83,16 @@ func (r *reservationRepository) UpdateReservation(reservation *model.Reservation
 	err := r.db.Save(reservation).Error
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (r *reservationRepository) UpdateExpiredReservations() error {
+	result := r.db.Model(&model.Reservation{}).
+		Where("end_time < ? AND status != ?", time.Now(), "Completed").
+		Update("status", "Completed")
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }

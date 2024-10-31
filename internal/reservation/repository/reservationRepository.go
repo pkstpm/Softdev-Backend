@@ -12,4 +12,5 @@ type ReservationRepository interface {
 	GetReservationByUserId(userId string) ([]model.Reservation, error)
 	GetResvationByUserId(userId string) ([]model.Reservation, error)
 	GetReservationByRestaurantId(restaurantId string) ([]model.Reservation, error)
+	UpdateExpiredReservations() error
 }

@@ -36,4 +36,7 @@ type RestaurantRepository interface {
 
 	CreateImages(images *model.Image) error
 	DeleteImage(imageId string) error
+
+	GetDishByID(dishId string) (*model.Dish, error)
+	GetTableByID(tableId string) (*model.Table, error)
 }
