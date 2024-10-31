@@ -46,7 +46,7 @@ type TimeSlot struct {
 	HourEnd      int        `gorm:"not null"`                         // Stores the ending hour as a DateTime
 	RestaurantID uuid.UUID  `gorm:"not null"`                         // Foreign key to Restaurant
 	Restaurant   Restaurant `gorm:"foreignKey:RestaurantID" json:"-"` // Relation to Restaurant model
-	Slots        string
+	Slots        string     // Stores the available slots for the time slot
 	IsClosed     bool
 }
 

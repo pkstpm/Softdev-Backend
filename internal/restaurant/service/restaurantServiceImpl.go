@@ -153,6 +153,7 @@ func (r *restaurantServiceImpl) GetTimeSlotByRestaurantId(restaurantId string) (
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(timeSlots)
 	return timeSlots, nil
 }
 

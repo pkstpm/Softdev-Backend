@@ -154,7 +154,7 @@ func (r *restaurantRepository) GetDishPrice(dishId uuid.UUID) (int, error) {
 
 func (r *restaurantRepository) GetTimeSlotsByRestaurantId(restaurantId string) ([]model.TimeSlot, error) {
 	var timeSlots []model.TimeSlot
-	err := r.db.Select("id, weekday, hour_start, hour_end, restaurant_id").Where("restaurant_id = ?", restaurantId).Find(&timeSlots).Error
+	err := r.db.Select("id, weekday, hour_start, hour_end, restaurant_id, slots").Where("restaurant_id = ?", restaurantId).Find(&timeSlots).Error
 	if err != nil {
 		return nil, err
 	}
