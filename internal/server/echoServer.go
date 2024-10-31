@@ -124,6 +124,7 @@ func (s *echoServer) initRestaurantRoute() {
 	restaurantRouters.GET("/get-dish/:restaurant_id", restaurantController.GetDishesByRestaurantId)
 
 	restaurantRouters.Use(middlewares.JWTMiddleware())
+	restaurantRouters.GET("/get-my-restaurant", restaurantController.GetMyRestaurant)
 	restaurantRouters.GET("/get-dish", restaurantController.GetDishesById)
 	restaurantRouters.GET("/get-time-slot", restaurantController.GetTimeSlot)
 	restaurantRouters.POST("/update-time-slot", restaurantController.UpdateTimeSlot)

@@ -111,6 +111,7 @@ func (r *restaurantServiceImpl) CreateTimeSlot(userId string) error {
 			Weekday:      i,
 			HourStart:    9,
 			HourEnd:      21,
+			IsClosed:     false,
 		}
 		err = r.restaurantRepository.CreateTimeSlot(timeslot)
 		if err != nil {
@@ -159,6 +160,8 @@ func (r *restaurantServiceImpl) UpdateTimeSlot(userId string, dto *dto.UpdateTim
 			if timeslot.Weekday == dto.Weekday {
 				timeslot.HourStart = dto.HourStart
 				timeslot.HourEnd = dto.HourEnd
+				timeslot.IsClosed = dto.IsClosed
+				timeslot.Slots = dto.Slots
 				err = r.restaurantRepository.UpdateTimeSlot(&timeslot)
 				if err != nil {
 					return err
